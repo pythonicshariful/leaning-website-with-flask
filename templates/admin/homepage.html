@@ -1,0 +1,240 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}হোমপেজ ও হিরো সেকশন এডিট — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}হোমপেজ ও হিরো সেকশন এডিট{% endblock %}
+
+{% block content %}
+<div class="admin-card" style="max-width: 960px;">
+  <div class="admin-card__header">
+    <div class="admin-card__title">হোমপেজের হিরো ব্যানার, ট্রাস্ট স্ট্রিপ, বৈশিষ্ট্য ও সেকশন হেডলাইন</div>
+  </div>
+  <div class="admin-card__body">
+    <form method="post" enctype="multipart/form-data">
+      
+      <!-- Hero Section -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        🚀 হিরো সেকশন (Top Hero)
+      </h3>
+      <div class="admin-form-group">
+        <label for="hero_pill">হিরো টপ ব্যাজ পিল</label>
+        <input class="admin-input" id="hero_pill" name="hero_pill" value="{{ settings.hero_pill }}">
+      </div>
+      <div class="admin-form-group">
+        <label for="hero_title">মূল হেডলাইন (HTML সাপোর্টেড, যেমন &lt;span class="highlight"&gt;...&lt;/span&gt;)</label>
+        <input class="admin-input" id="hero_title" name="hero_title" value="{{ settings.hero_title }}">
+      </div>
+      <div class="admin-form-group">
+        <label for="hero_desc">সাব-হেডলাইন / বিবরণ</label>
+        <textarea class="admin-textarea" id="hero_desc" name="hero_desc" rows="3">{{ settings.hero_desc }}</textarea>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="admin-form-group">
+          <label for="hero_btn1_text">১ম বাটন টেক্সট</label>
+          <input class="admin-input" id="hero_btn1_text" name="hero_btn1_text" value="{{ settings.hero_btn1_text }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="hero_btn1_link">১ম বাটন লিংক</label>
+          <input class="admin-input" id="hero_btn1_link" name="hero_btn1_link" value="{{ settings.hero_btn1_link }}">
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="admin-form-group">
+          <label for="hero_btn2_text">২য় বাটন টেক্সট</label>
+          <input class="admin-input" id="hero_btn2_text" name="hero_btn2_text" value="{{ settings.hero_btn2_text }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="hero_btn2_link">২য় বাটন লিংক</label>
+          <input class="admin-input" id="hero_btn2_link" name="hero_btn2_link" value="{{ settings.hero_btn2_link }}">
+        </div>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="admin-form-group">
+        <label>হিরো সেকশনের ছবি</label>
+        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 10px;">
+          {% if settings.hero_image %}
+            <img src="{{ settings.hero_image }}" alt="Hero" style="width: 140px; aspect-ratio: 4/3; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0;">
+          {% endif %}
+          <div style="flex: 1;">
+            <input class="admin-input" id="hero_image" name="hero_image" value="{{ settings.hero_image }}">
+            <div class="hint" style="margin-top: 6px;">অথবা কম্পিউটার থেকে নতুন ছবি আপলোড করুন:</div>
+            <input type="file" name="hero_image_file" accept="image/*" style="margin-top: 4px; font-size: 13px;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Floating Badges -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="admin-card" style="padding: 16px; margin-bottom: 0;">
+          <h4 style="font-size: 14px; margin-bottom: 10px;">ভাসমান ব্যাজ ১ (টপ)</h4>
+          <div class="admin-form-group">
+            <label for="hero_float1_title">টাইটেল</label>
+            <input class="admin-input" id="hero_float1_title" name="hero_float1_title" value="{{ settings.hero_float1_title }}">
+          </div>
+          <div class="admin-form-group">
+            <label for="hero_float1_desc">সাব-টাইটেল</label>
+            <input class="admin-input" id="hero_float1_desc" name="hero_float1_desc" value="{{ settings.hero_float1_desc }}">
+          </div>
+        </div>
+        <div class="admin-card" style="padding: 16px; margin-bottom: 0;">
+          <h4 style="font-size: 14px; margin-bottom: 10px;">ভাসমান ব্যাজ ২ (বটম)</h4>
+          <div class="admin-form-group">
+            <label for="hero_float2_title">টাইটেল</label>
+            <input class="admin-input" id="hero_float2_title" name="hero_float2_title" value="{{ settings.hero_float2_title }}">
+          </div>
+          <div class="admin-form-group">
+            <label for="hero_float2_desc">সাব-টাইটেল</label>
+            <input class="admin-input" id="hero_float2_desc" name="hero_float2_desc" value="{{ settings.hero_float2_desc }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Stats -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-top: 30px; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        📊 হিরো কাউন্টার স্ট্যাটস (৩টি)
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        <div>
+          <div class="admin-form-group">
+            <label for="hero_stat_students">১. মান (যেমন: ২৫,০০০+)</label>
+            <input class="admin-input" id="hero_stat_students" name="hero_stat_students" value="{{ settings.hero_stat_students }}">
+          </div>
+          <div class="admin-form-group">
+            <label for="hero_stat_students_label">লেবেল</label>
+            <input class="admin-input" id="hero_stat_students_label" name="hero_stat_students_label" value="{{ settings.hero_stat_students_label }}">
+          </div>
+        </div>
+        <div>
+          <div class="admin-form-group">
+            <label for="hero_stat_rating">২. মান (যেমন: ৪.৯ ★)</label>
+            <input class="admin-input" id="hero_stat_rating" name="hero_stat_rating" value="{{ settings.hero_stat_rating }}">
+          </div>
+          <div class="admin-form-group">
+            <label for="hero_stat_rating_label">লেবেল</label>
+            <input class="admin-input" id="hero_stat_rating_label" name="hero_stat_rating_label" value="{{ settings.hero_stat_rating_label }}">
+          </div>
+        </div>
+        <div>
+          <div class="admin-form-group">
+            <label for="hero_stat_projects">৩. মান (যেমন: ১০০%)</label>
+            <input class="admin-input" id="hero_stat_projects" name="hero_stat_projects" value="{{ settings.hero_stat_projects }}">
+          </div>
+          <div class="admin-form-group">
+            <label for="hero_stat_projects_label">লেবেল</label>
+            <input class="admin-input" id="hero_stat_projects_label" name="hero_stat_projects_label" value="{{ settings.hero_stat_projects_label }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust Strip -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-top: 30px; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        🤝 ট্রাস্ট স্ট্রিপ আইটেমসমূহ (৪টি সুবিধা)
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        {% for t in trust %}
+          <div class="admin-card" style="padding: 16px; margin-bottom: 0;">
+            <div class="admin-form-group">
+              <label>শিরোনাম</label>
+              <input class="admin-input" name="trust_title" value="{{ t.title }}">
+            </div>
+            <div class="admin-form-group">
+              <label>ছোট বিবরণ</label>
+              <input class="admin-input" name="trust_desc" value="{{ t.desc }}">
+              <input type="hidden" name="trust_icon" value="{{ t.icon or 'check' }}">
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Features Section -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-top: 30px; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        ⭐ পড়ারঘরের বৈশিষ্ট্য (Features Section)
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px;">
+        <div class="admin-form-group">
+          <label for="features_tag">টপ ট্যাগ</label>
+          <input class="admin-input" id="features_tag" name="features_tag" value="{{ settings.features_tag }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="features_title">মূল শিরোনাম</label>
+          <input class="admin-input" id="features_title" name="features_title" value="{{ settings.features_title }}">
+        </div>
+      </div>
+      <div class="admin-form-group">
+        <label for="features_desc">সাব-টাইটেল বিবরণ</label>
+        <textarea class="admin-textarea" id="features_desc" name="features_desc" rows="2">{{ settings.features_desc }}</textarea>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        {% for f in features %}
+          <div class="admin-card" style="padding: 16px; margin-bottom: 0;">
+            <div class="admin-form-group">
+              <label>বৈশিষ্ট্য শিরোনাম</label>
+              <input class="admin-input" name="feature_title" value="{{ f.title }}">
+            </div>
+            <div class="admin-form-group">
+              <label>বিবরণ</label>
+              <textarea class="admin-textarea" name="feature_desc" rows="3">{{ f.desc }}</textarea>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Other Section Headings -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-top: 30px; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        📑 অন্যান্য সেকশনের হেডলাইন ও বর্ণনা
+      </h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div class="admin-form-group">
+          <label for="courses_tag">কোর্স সেকশন ট্যাগ</label>
+          <input class="admin-input" id="courses_tag" name="courses_tag" value="{{ settings.courses_tag }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="courses_title">কোর্স সেকশন শিরোনাম</label>
+          <input class="admin-input" id="courses_title" name="courses_title" value="{{ settings.courses_title }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="courses_desc">কোর্স সেকশন সাব-টাইটেল</label>
+          <input class="admin-input" id="courses_desc" name="courses_desc" value="{{ settings.courses_desc }}">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div class="admin-form-group">
+          <label for="workshops_tag">ওয়ার্কশপ সেকশন ট্যাগ</label>
+          <input class="admin-input" id="workshops_tag" name="workshops_tag" value="{{ settings.workshops_tag }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="workshops_title">ওয়ার্কশপ সেকশন শিরোনাম</label>
+          <input class="admin-input" id="workshops_title" name="workshops_title" value="{{ settings.workshops_title }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="workshops_desc">ওয়ার্কশপ সেকশন সাব-টাইটেল</label>
+          <input class="admin-input" id="workshops_desc" name="workshops_desc" value="{{ settings.workshops_desc }}">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+        <div class="admin-form-group">
+          <label for="blog_tag">ব্লগ সেকশন ট্যাগ</label>
+          <input class="admin-input" id="blog_tag" name="blog_tag" value="{{ settings.blog_tag }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="blog_title">ব্লগ সেকশন শিরোনাম</label>
+          <input class="admin-input" id="blog_title" name="blog_title" value="{{ settings.blog_title }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="blog_desc">ব্লগ সেকশন সাব-টাইটেল</label>
+          <input class="admin-input" id="blog_desc" name="blog_desc" value="{{ settings.blog_desc }}">
+        </div>
+      </div>
+
+      <div style="margin-top: 30px; display: flex; gap: 12px;">
+        <button class="btn-admin btn-admin-primary" type="submit" style="padding: 12px 28px; font-size: 15px;">
+          ✓ হোমপেজের সকল সেকশন সংরক্ষণ করুন
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

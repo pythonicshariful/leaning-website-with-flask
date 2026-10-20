@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>অ্যাডমিন লগইন — পড়ারঘর</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body style="background: #0b192c; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; font-family: 'Hind Siliguri', sans-serif;">
+
+  <div style="background: #ffffff; width: 100%; max-width: 420px; border-radius: 16px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+    <div style="text-align: center; margin-bottom: 28px;">
+      <div style="width: 50px; height: 50px; background: #0174C7; color: #fff; font-size: 24px; font-weight: 800; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+        প
+      </div>
+      <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">পড়ারঘর অ্যাডমিন</h1>
+      <p style="font-size: 13.5px; color: #64748b;">কন্ট্রোল প্যানেলে লগইন করুন</p>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div style="background: #fef2f2; border-left: 4px solid #ef4444; color: #991b1b; padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 20px;">
+          {{ messages[0] }}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post">
+      <div class="admin-form-group">
+        <label for="username">ইউজারনেম</label>
+        <input class="admin-input" id="username" name="username" placeholder="ইউজারনেম লিখুন" required>
+      </div>
+
+      <div class="admin-form-group">
+        <label for="password">পাসওয়ার্ড</label>
+        <input class="admin-input" type="password" id="password" name="password" placeholder="পাসওয়ার্ড লিখুন" required>
+      </div>
+
+      <button class="btn-admin btn-admin-primary" type="submit" style="width: 100%; justify-content: center; padding: 12px; font-size: 15px; margin-top: 10px;">
+        লগইন করুন
+      </button>
+    </form>
+
+    <div style="text-align: center; margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+      <a href="{{ url_for('index') }}" style="color: #0174C7; font-size: 13px; text-decoration: none;">← মূল ওয়েবসাইটে ফিরে যান</a>
+    </div>
+  </div>
+
+</body>
+</html>

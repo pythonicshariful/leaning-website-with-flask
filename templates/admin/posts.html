@@ -1,0 +1,81 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}ব্লগ আর্টিকেল — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}ব্লগ ও আর্টিকেল ব্যবস্থাপনা{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; align-items: start;">
+  <!-- Posts List -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">প্রকাশিত ব্লগ পোস্টসমূহ ({{ posts|length }}টি)</div>
+    </div>
+    <div class="admin-card__body" style="padding: 0;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>পোস্ট শিরোনাম</th>
+            <th>ক্যাটাগরি ট্যাগ</th>
+            <th>তারিখ</th>
+            <th>অ্যাকশন</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in posts %}
+            <tr>
+              <td>
+                <strong>{{ p.title }}</strong><br>
+                <small style="color: #64748b;">ID: <code>{{ p.id }}</code></small>
+              </td>
+              <td>
+                <span style="background: #e0f2fe; color: #0174C7; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">
+                  {{ p.tag }}
+                </span>
+              </td>
+              <td>{{ p.date }}</td>
+              <td>
+                <a href="{{ url_for('admin_post_delete', pid=p.id) }}" class="btn-admin btn-admin-danger" style="padding: 4px 8px; font-size: 12px;" onclick="return confirm('পোস্টটি মুছে ফেলতে চান?');">মুছুন</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create New Post -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">+ নতুন ব্লগ পোস্ট লিখুন</div>
+    </div>
+    <div class="admin-card__body">
+      <form method="post" action="{{ url_for('admin_post_save') }}">
+        <div class="admin-form-group">
+          <label for="id">পোস্ট আইডি (Slug / ID) *</label>
+          <input class="admin-input" id="id" name="id" placeholder="যেমন: cv-tips-2026" required style="font-family: monospace;">
+        </div>
+        <div class="admin-form-group">
+          <label for="title">পোস্ট শিরোনাম *</label>
+          <input class="admin-input" id="title" name="title" placeholder="যেমন: সিভি এক পাতাই রাখুন" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="admin-form-group">
+            <label for="tag">ট্যাগ / ক্যাটাগরি</label>
+            <input class="admin-input" id="tag" name="tag" placeholder="চাকরি, পেজ, পড়ারঘর" required>
+          </div>
+          <div class="admin-form-group">
+            <label for="date">প্রকাশের তারিখ</label>
+            <input class="admin-input" id="date" name="date" placeholder="যেমন: ১৬ অক্টোবর ২০২৬">
+          </div>
+        </div>
+        <div class="admin-form-group">
+          <label for="body">মূল আর্টিকেল টেক্সট *</label>
+          <textarea class="admin-textarea" id="body" name="body" rows="6" placeholder="আর্টিকেলের বিস্তারিত কথা এখানে লিখুন..." required></textarea>
+        </div>
+        <button class="btn-admin btn-admin-primary" type="submit" style="width: 100%; justify-content: center; padding: 12px;">
+          ✓ ব্লগ পোস্ট প্রকাশ করুন
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}মেসেজ ও ভর্তি রিকোয়েস্ট — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}মেসেজ ও ভর্তি ইনবক্স{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 30px;">
+
+  <!-- Contact Messages -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">যোগাযোগ ফর্মের মেসেজসমূহ ({{ messages|length }}টি)</div>
+    </div>
+    <div class="admin-card__body" style="padding: 0;">
+      {% if messages %}
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>তারিখ ও সময়</th>
+              <th>প্রেরকের নাম</th>
+              <th>মোবাইল নম্বর</th>
+              <th>মেসেজ / জিজ্ঞাসা</th>
+              <th>অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in messages %}
+              <tr>
+                <td><small style="color: #64748b;">{{ m.created_at }}</small></td>
+                <td><strong>{{ m.name }}</strong></td>
+                <td><a href="tel:{{ m.phone }}" style="color: #0174C7; font-weight: bold;">{{ m.phone }}</a></td>
+                <td>{{ m.message }}</td>
+                <td>
+                  <a href="{{ url_for('admin_message_delete', mid=m.id) }}" class="btn-admin btn-admin-danger" style="padding: 4px 8px; font-size: 12px;" onclick="return confirm('মেসেজটি মুছে ফেলতে চান?');">মুছুন</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div style="padding: 30px; text-align: center; color: #94a3b8;">কোনো নতুন কন্টাক্ট মেসেজ নেই।</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Enrollment Requests -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">ভর্তি ও ডাউনলোড রিকোয়েস্টসমূহ ({{ enrollments|length }}টি)</div>
+    </div>
+    <div class="admin-card__body" style="padding: 0;">
+      {% if enrollments %}
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>তারিখ ও সময়</th>
+              <th>ধরন (Kind)</th>
+              <th>আইটেমের নাম</th>
+              <th>আইডি</th>
+              <th>আইপি এড্রেস</th>
+              <th>অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in enrollments %}
+              <tr>
+                <td><small style="color: #64748b;">{{ e.created_at }}</small></td>
+                <td>
+                  <span style="background: #e0f2fe; color: #0174C7; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase;">
+                    {{ e.kind }}
+                  </span>
+                </td>
+                <td><strong>{{ e.item_title }}</strong></td>
+                <td><code>{{ e.item_id }}</code></td>
+                <td><small style="color: #64748b;">{{ e.ip }}</small></td>
+                <td>
+                  <a href="{{ url_for('admin_enrollment_delete', eid=e.id) }}" class="btn-admin btn-admin-danger" style="padding: 4px 8px; font-size: 12px;" onclick="return confirm('মুছে ফেলতে চান?');">মুছুন</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <div style="padding: 30px; text-align: center; color: #94a3b8;">কোনো ভর্তি রিকোয়েস্ট নেই।</div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

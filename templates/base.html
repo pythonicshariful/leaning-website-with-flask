@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ settings.site_title }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- Top Announcement Bar (Controlled from Admin) -->
+  {% if settings.announcement_active and settings.announcement %}
+  <div class="top-banner">
+    <div class="container">
+      <div class="top-banner__left">
+        <span class="top-banner__badge">{{ settings.announcement_badge or 'অফার' }}</span>
+        {% if settings.announcement_link %}
+          <a href="{{ settings.announcement_link }}" style="color: inherit; text-decoration: none;">{{ settings.announcement }}</a>
+        {% else %}
+          <span>{{ settings.announcement }}</span>
+        {% endif %}
+      </div>
+      <div class="top-banner__right">
+        <span>হেল্পলাইন: {{ settings.phone }}</span>
+        <span>·</span>
+        <a href="mailto:{{ settings.email }}">{{ settings.email }}</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Main Navbar (Controlled from Admin) -->
+  <header class="navbar">
+    <div class="container navbar__inner">
+      <!-- Brand Logo -->
+      <a class="brand" href="{{ url_for('index') }}">
+        <div class="brand__logo">
+          {{ settings.brand_logo_text or 'প' }}
+        </div>
+        <div class="brand__info">
+          <span class="brand__title">{{ settings.brand_name }}</span>
+          <span class="brand__tagline">{{ settings.brand_tagline }}</span>
+        </div>
+      </a>
+
+      <!-- Search Input -->
+      <form class="nav-search" action="{{ url_for('courses') }}" method="get">
+        <svg class="nav-search__icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" name="q" placeholder="{{ settings.search_placeholder or 'কোর্স বা স্কিল খুঁজুন...' }}">
+      </form>
+
+      <!-- Navigation Links (Dynamic from DB) -->
+      <nav>
+        <ul class="nav-links" id="nav-menu">
+          {% for item in nav_items %}
+            {% set active_class = '' %}
+            {% if item.endpoint and request.endpoint == item.endpoint %}
+              {% set active_class = 'is-on' %}
+            {% elif request.path == item.url %}
+              {% set active_class = 'is-on' %}
+            {% endif %}
+            <li><a href="{{ item.url }}" class="{{ active_class }}">{{ item.label }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+
+      <!-- CTA / Auth Button & Admin Shortcut -->
+      <div class="nav-actions">
+        <a class="btn-cta" href="{{ settings.nav_cta_link or url_for('login') }}">
+          <span>{{ settings.nav_cta_text or 'লগইন / সাইন আপ' }}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"></path>
+            <path d="m12 5 7 7-7 7"></path>
+          </svg>
+        </a>
+        <button class="mobile-menu-btn" type="button" aria-label="মেনু খুলুন" onclick="document.getElementById('nav-menu').classList.toggle('nav-links--open')">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Flash Notification -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flash">
+        <div class="container">{{ messages[0] }}</div>
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer (Controlled from Admin) -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer-brand">
+          <h3>{{ settings.brand_name }}</h3>
+          <p>{{ settings.footer_about }}</p>
+          <div class="footer-contact-item">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <span>{{ settings.phone }} ({{ settings.phone_hours or 'সকাল ১০টা - রাত ৯টা' }})</span>
+          </div>
+          <div class="footer-contact-item">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <span>{{ settings.email }}</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>কোর্স ও প্রোগ্রাম</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('courses') }}">সকল কোর্সসমূহ</a></li>
+            <li><a href="{{ url_for('bundles') }}">স্পেশাল বান্ডেল প্যাক</a></li>
+            <li><a href="{{ url_for('workshops') }}">লাইভ ওয়ার্কশপ</a></li>
+            <li><a href="{{ url_for('ebooks') }}">রিসোর্স ও ই-বুক</a></li>
+            <li><a href="{{ url_for('verify') }}">সার্টিফিকেট যাচাই</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>পড়ারঘর</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('about') }}">আমাদের সম্পর্কে</a></li>
+            <li><a href="{{ url_for('contact') }}">যোগাযোগ ও সাপোর্ট</a></li>
+            <li><a href="{{ url_for('blog') }}">ক্যারিয়ার ব্লগ</a></li>
+            <li><a href="{{ url_for('legal', page='terms') }}">ব্যবহারের শর্তাবলী</a></li>
+            <li><a href="{{ url_for('legal', page='privacy') }}">প্রাইভেসি পলিসি</a></li>
+            <li><a href="{{ url_for('legal', page='refund') }}">রিফান্ড নীতি</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>ঠিকানা ও স্টুডিও</h4>
+          <p style="font-size:14px; color:#94a3b8; line-height: 1.6; margin-bottom:14px;">
+            {{ settings.address|replace('\n', '<br>')|safe }}
+          </p>
+          <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 12px; color: #38bdf8; font-weight: 600; margin-bottom: 4px;">{{ settings.studio_help_title or 'ছাত্র-ছাত্রীদের সহায়তা' }}</p>
+            <p style="font-size: 13px; color: #e2e8f0;">{{ settings.studio_help_desc or 'প্রতি শুক্রবার সরাসরি স্টুডিওতে প্র্যাকটিস সেশন।' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Gateways -->
+      <div class="payment-methods-strip">
+        <span style="font-size: 13px; color: #94a3b8; font-weight: 600;">নিরাপদ পেমেন্ট পার্টনার:</span>
+        <div class="pay-badges">
+          <span class="pay-pill pay-pill--bkash">bKash</span>
+          <span class="pay-pill pay-pill--nagad">Nagad</span>
+          <span class="pay-pill pay-pill--visa">VISA</span>
+          <span class="pay-pill pay-pill--mastercard">MasterCard</span>
+          <span class="pay-pill" style="color:#0079C1;">Rocket</span>
+        </div>
+      </div>
+
+      <!-- Copyright & Admin Link -->
+      <div class="footer-bottom">
+        <p>© {{ year }} {{ settings.footer_copyright }}</p>
+        <p style="display: flex; gap: 12px; align-items: center;">
+          <span>{{ settings.footer_sub_copyright }}</span>
+          <span>·</span>
+          <a href="{{ url_for('admin_dashboard') }}" style="color: #64748b; font-size: 12px; text-decoration: none;">🔒 অ্যাডমিন প্যানেল</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

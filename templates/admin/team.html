@@ -1,0 +1,66 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}টিম মেম্বার ও মেন্টর — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}ইন্সট্রাক্টর ও টিম মেম্বার ব্যবস্থাপনা{% endblock %}
+
+{% block content %}
+<div class="admin-card" style="max-width: 800px;">
+  <div class="admin-card__header">
+    <div>
+      <div class="admin-card__title">আমাদের সম্পর্কে (About) পেজের টিম মেম্বার তালিকা</div>
+      <div style="font-size: 13px; color: var(--admin-text-muted);">ইন্সট্রাক্টরের নাম ও পদবি আপডেট বা নতুন মেম্বার যুক্ত করুন</div>
+    </div>
+  </div>
+  <div class="admin-card__body">
+    <form method="post">
+      <div id="team-members-container">
+        {% for m in team %}
+          <div class="team-row" style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0;">
+            <div style="width: 36px; height: 36px; background: #e0f2fe; color: #0174C7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+              {{ m.name[:1] }}
+            </div>
+            <div style="flex: 1;">
+              <input class="admin-input" name="name" value="{{ m.name }}" placeholder="ইন্সট্রাক্টরের নাম" required>
+            </div>
+            <div style="flex: 1.5;">
+              <input class="admin-input" name="role" value="{{ m.role }}" placeholder="অভিজ্ঞতা / পদবি (যেমন: এক্সেল ও অডিট)" required>
+            </div>
+            <button type="button" class="btn-admin btn-admin-danger" style="padding: 6px 10px;" onclick="this.closest('.team-row').remove()">×</button>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div style="margin-top: 16px; margin-bottom: 24px;">
+        <button type="button" class="btn-admin btn-admin-secondary" onclick="addTeamMember()">+ নতুন টিম মেম্বার যোগ করুন</button>
+      </div>
+
+      <div style="border-top: 1px solid var(--admin-border); padding-top: 20px;">
+        <button class="btn-admin btn-admin-primary" type="submit" style="padding: 12px 28px; font-size: 15px;">
+          ✓ টিম তালিকা সংরক্ষণ করুন
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function addTeamMember() {
+  const container = document.getElementById('team-members-container');
+  const div = document.createElement('div');
+  div.className = 'team-row';
+  div.style = 'display: flex; gap: 12px; align-items: center; margin-bottom: 12px; background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0;';
+  div.innerHTML = `
+    <div style="width: 36px; height: 36px; background: #e0f2fe; color: #0174C7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+      ম
+    </div>
+    <div style="flex: 1;">
+      <input class="admin-input" name="name" placeholder="ইন্সট্রাক্টরের নাম" required>
+    </div>
+    <div style="flex: 1.5;">
+      <input class="admin-input" name="role" placeholder="পদবি বা সাবজেক্ট" required>
+    </div>
+    <button type="button" class="btn-admin btn-admin-danger" style="padding: 6px 10px;" onclick="this.closest('.team-row').remove()">×</button>
+  `;
+  container.appendChild(div);
+}
+</script>
+{% endblock %}

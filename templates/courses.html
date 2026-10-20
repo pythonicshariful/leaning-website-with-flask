@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}সকল কোর্সসমূহ — পড়ারঘর{% endblock %}
+{% block content %}
+<div class="container" style="padding-top: 40px; padding-bottom: 60px;">
+  <!-- Page Header -->
+  <div style="margin-bottom: 32px;">
+    <div class="section-header__tag">স্কিল ক্যাটালগ</div>
+    <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 8px;">সকল প্র্যাকটিক্যাল কোর্সসমূহ</h1>
+    <p style="color: #64748b; font-size: 16px;">হিডেন কোনো চার্জ বা আপসেল নেই। নিচে যা উল্লেখ করা আছে, সরাসরি সেটাই পাবেন।</p>
+  </div>
+
+  <!-- Filter Category Tabs -->
+  <div class="filter-tabs">
+    <a class="filter-tab {{ 'is-on' if not cat else '' }}" href="{{ url_for('courses') }}">সব ক্যাটাগরি</a>
+    {% for k in cats %}
+      <a class="filter-tab {{ 'is-on' if cat == k else '' }}" href="{{ url_for('courses', cat=k) }}">{{ k }}</a>
+    {% endfor %}
+  </div>
+
+  <!-- Course Grid with Real Thumbnails -->
+  <div class="course-grid">
+    {% for c in courses %}
+      <article class="course-card">
+        <a class="course-card__thumb-wrap" href="{{ url_for('course', cid=c.id) }}">
+          <img class="course-card__thumb" src="{{ c.image or url_for('static', filename='images/courses/' ~ c.id ~ '.jpg') }}" alt="{{ c.title }}" loading="lazy">
+          <span class="course-card__badge-left">{{ c.badge }}</span>
+          {% if c.tag %}
+            <span class="course-card__badge-right">{{ c.tag }}</span>
+          {% endif %}
+        </a>
+
+        <div class="course-card__body">
+          <div class="course-card__meta-bar">
+            <span class="course-card__category">{{ c.category }}</span>
+            <div class="course-card__rating">
+              <span>★</span>
+              <span>{{ c.rating or '4.9' }}</span>
+              <span class="course-card__reviews-count">({{ c.reviews or '120' }})</span>
+            </div>
+          </div>
+
+          <h2 class="course-card__title">
+            <a href="{{ url_for('course', cid=c.id) }}">{{ c.title }}</a>
+          </h2>
+          <p class="course-card__desc">{{ c.short }}</p>
+
+          <div class="course-card__instructor">
+            <div class="instructor-avatar">
+              {{ c.instructor[:1] }}
+            </div>
+            <div class="instructor-info">
+              <span class="instructor-name">{{ c.instructor }}</span>
+              <span class="instructor-role">{{ c.role }}</span>
+            </div>
+          </div>
+
+          <div class="course-card__chips">
+            <div class="course-card__chip-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>{{ c.hours }} ঘণ্টা</span>
+            </div>
+            <div class="course-card__chip-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              <span>{{ c.lessons }} পাঠ</span>
+            </div>
+            <div class="course-card__chip-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              <span>{{ c.students }} জন</span>
+            </div>
+          </div>
+
+          <div class="course-card__footer">
+            <div class="course-card__price-box">
+              <span class="price-now">{{ c.price|taka }}</span>
+              <span class="price-old">{{ c.old|taka }}</span>
+            </div>
+            <a class="btn-enroll-card" href="{{ url_for('course', cid=c.id) }}">
+              <span>বিস্তারিত দেখুন</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </a>
+          </div>
+        </div>
+      </article>
+    {% else %}
+      <div style="grid-column: 1 / -1; background: #ffffff; padding: 48px; border-radius: 16px; text-align: center; border: 1px solid #e2e8f0;">
+        <p style="font-size: 18px; color: #64748b; margin-bottom: 12px;">এই ক্যাটাগরিতে বর্তমানে কোনো কোর্স নেই।</p>
+        <a class="btn-primary" href="{{ url_for('courses') }}">সকল কোর্স দেখুন</a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

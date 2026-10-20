@@ -1,0 +1,131 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ 'কোর্স সম্পাদনা' if c else 'নতুন কোর্স তৈরি' }} — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}{{ 'কোর্স সম্পাদনা: ' ~ c.title if c else 'নতুন কোর্স তৈরি করুন' }}{% endblock %}
+
+{% block content %}
+<div class="admin-card" style="max-width: 900px;">
+  <div class="admin-card__header">
+    <div class="admin-card__title">{{ 'কোর্সের তথ্য পরিবর্তন করুন' if c else 'নতুন কোর্সের বিস্তারিত ফরম' }}</div>
+    <a href="{{ url_for('admin_courses') }}" class="btn-admin btn-admin-secondary">← কোর্স তালিকায় ফিরুন</a>
+  </div>
+
+  <div class="admin-card__body">
+    <form method="post" enctype="multipart/form-data">
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+        <div class="admin-form-group">
+          <label for="title">কোর্সের পূর্ণ নাম (Title) *</label>
+          <input class="admin-input" id="title" name="title" value="{{ c.title if c else '' }}" placeholder="যেমন: অফিস এক্সেল: চাকরির হিসাব থেকে রিপোর্ট" required>
+        </div>
+        <div class="admin-form-group">
+          <label for="id">কোর্স আইডি / স্লাগ (ID) *</label>
+          <input class="admin-input" id="id" name="id" value="{{ c.id if c else '' }}" placeholder="যেমন: excel-office" {{ 'readonly' if c else 'required' }} style="font-family: monospace;">
+          <div class="hint">{{ 'আইডি পরিবর্তন করা যাবে না' if c else 'ইংরেজি ছোট হাতের ও হাইফেন ব্যবহার করুন' }}</div>
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label for="short">সংক্ষিপ্ত বিবরণ (Short Description) *</label>
+        <textarea class="admin-textarea" id="short" name="short" rows="2" placeholder="কোর্সের সংক্ষেপ এক বা দুই লাইনে..." required>{{ c.short if c else '' }}</textarea>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        <div class="admin-form-group">
+          <label for="category">ক্যাটাগরি *</label>
+          <input class="admin-input" id="category" name="category" value="{{ c.category if c else 'অফিস' }}" placeholder="অফিস, ইংরেজি, ভিডিও, মার্কেটিং, ডিজাইন, ওয়েব" required>
+        </div>
+        <div class="admin-form-group">
+          <label for="level">কোর্স লেভেল</label>
+          <select class="admin-select" id="level" name="level">
+            <option value="শুরুর দিক" {{ 'selected' if c and c.level == 'শুরুর দিক' else '' }}>শুরুর দিক (Beginner)</option>
+            <option value="মাঝারি" {{ 'selected' if c and c.level == 'মাঝারি' else '' }}>মাঝারি (Intermediate)</option>
+            <option value="অ্যাডভান্সড" {{ 'selected' if c and c.level == 'অ্যাডভান্সড' else '' }}>অ্যাডভান্সড (Advanced)</option>
+          </select>
+        </div>
+        <div class="admin-form-group">
+          <label for="hours">কোর্সের সময়কাল (ঘণ্টা)</label>
+          <input class="admin-input" type="number" id="hours" name="hours" value="{{ c.hours if c else 15 }}">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+        <div class="admin-form-group">
+          <label for="lessons">মোট লেসন / ক্লাস</label>
+          <input class="admin-input" type="number" id="lessons" name="lessons" value="{{ c.lessons if c else 30 }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="price">বর্তমান মূল্য (টাকা) *</label>
+          <input class="admin-input" type="number" id="price" name="price" value="{{ c.price if c else 1490 }}" required>
+        </div>
+        <div class="admin-form-group">
+          <label for="old">পূর্বের মূল্য (টাকা)</label>
+          <input class="admin-input" type="number" id="old" name="old" value="{{ c.old if c else 2490 }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="students">শিক্ষার্থী সংখ্যা</label>
+          <input class="admin-input" type="number" id="students" name="students" value="{{ c.students if c else 1200 }}">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+        <div class="admin-form-group">
+          <label for="instructor">ইন্সট্রাক্টরের নাম *</label>
+          <input class="admin-input" id="instructor" name="instructor" value="{{ c.instructor if c else '' }}" placeholder="যেমন: ফারহানা আক্তার" required>
+        </div>
+        <div class="admin-form-group">
+          <label for="role">ইন্সট্রাক্টরের অভিজ্ঞতা / পদবি</label>
+          <input class="admin-input" id="role" name="role" value="{{ c.role if c else '' }}" placeholder="যেমন: অডিট ফার্মে ৯ বছর">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+        <div class="admin-form-group">
+          <label for="rating">গড় রেটিং (১-৫)</label>
+          <input class="admin-input" type="number" step="0.1" id="rating" name="rating" value="{{ c.rating if c else 4.9 }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="reviews">রিভিউ সংখ্যা</label>
+          <input class="admin-input" type="number" id="reviews" name="reviews" value="{{ c.reviews if c else 120 }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="badge">লেফট ব্যাজ পিল</label>
+          <input class="admin-input" id="badge" name="badge" value="{{ c.badge if c else 'চাকরির জন্য' }}" placeholder="চাকরির জন্য, ফ্রিল্যান্স">
+        </div>
+        <div class="admin-form-group">
+          <label for="tag">টপ রাইট ট্যাগ</label>
+          <input class="admin-input" id="tag" name="tag" value="{{ c.tag if c else 'বেস্টসেলার' }}" placeholder="বেস্টসেলার, জনপ্রিয়">
+        </div>
+      </div>
+
+      <!-- Thumbnail -->
+      <div class="admin-form-group">
+        <label>কোর্স থাম্বনেইল ছবি (16:9 রেশিও)</label>
+        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 10px;">
+          {% if c and c.image %}
+            <img src="{{ c.image }}" alt="বর্তমান থাম্বনেইল" style="width: 140px; aspect-ratio: 16/9; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0;">
+          {% endif %}
+          <div style="flex: 1;">
+            <input class="admin-input" id="image" name="image" value="{{ c.image if c else '/static/images/courses/excel-office.jpg' }}" placeholder="ছবির পাথ বা URL (যেমন: /static/images/courses/excel-office.jpg)">
+            <div class="hint" style="margin-top: 6px;">অথবা সরাসরি নতুন ছবি ফাইল আপলোড করুন:</div>
+            <input type="file" name="image_file" accept="image/*" style="margin-top: 4px; font-size: 13px;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Modules / Syllabus -->
+      <div class="admin-form-group">
+        <label for="modules_text">সিলেবাস ও মডিউলসমূহ (প্রতি লাইনে একটি করে মডিউল লিখুন)</label>
+        <textarea class="admin-textarea" id="modules_text" name="modules_text" rows="5" placeholder="সেল, শিট, প্রিন্ট সেটআপ&#10;সূত্র: IF, SUMIFS, TEXT&#10;VLOOKUP, Pivot টেবিল">{{ c.modules|join('\n') if c and c.modules else '' }}</textarea>
+        <div class="hint">এন্টার দিয়ে নতুন লাইন দিলে আলাদা আলাদা মডিউল পয়েন্ট তৈরি হবে।</div>
+      </div>
+
+      <div style="margin-top: 30px; display: flex; gap: 12px;">
+        <button class="btn-admin btn-admin-primary" type="submit" style="padding: 12px 28px; font-size: 15px;">
+          {{ '✓ কোর্স আপডেট সংরক্ষণ করুন' if c else '✓ নতুন কোর্স তৈরি করুন' }}
+        </button>
+        <a href="{{ url_for('admin_courses') }}" class="btn-admin btn-admin-secondary">বাতিল</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

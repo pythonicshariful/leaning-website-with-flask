@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}যোগাযোগ ও সহায়তা — পড়ারঘর{% endblock %}
+{% block content %}
+<div class="container" style="padding-top: 50px; padding-bottom: 70px;">
+  <div style="margin-bottom: 36px;">
+    <div class="section-header__tag">সরাসরি কথা বলুন</div>
+    <h1 style="font-size: 36px; font-weight: 800; margin-bottom: 8px;">যোগাযোগ ও স্টুডেন্ট সাপোর্ট</h1>
+    <p style="color: #64748b; font-size: 16px;">কোর্স বা ভর্তি সংক্রান্ত যেকোনো জিজ্ঞাসা থাকলে সরাসরি ফোন করুন অথবা মেসেজ পাঠান।</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; align-items: start;">
+    <!-- Contact Info Cards -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; display: flex; gap: 16px; align-items: center;">
+        <div style="width: 48px; height: 48px; border-radius: 12px; background: #e0f2fe; color: #0174C7; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+          📞
+        </div>
+        <div>
+          <div style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700;">হেল্পলাইন</div>
+          <div style="font-size: 18px; font-weight: 800; color: #0f172a;">০১৭১১-৬৬২২৪৪</div>
+          <div style="font-size: 12px; color: #94a3b8;">সকাল ১০টা হতে রাত ৯টা</div>
+        </div>
+      </div>
+
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; display: flex; gap: 16px; align-items: center;">
+        <div style="width: 48px; height: 48px; border-radius: 12px; background: #e0f2fe; color: #0174C7; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+          ✉️
+        </div>
+        <div>
+          <div style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700;">অফিসিয়াল ইমেইল</div>
+          <div style="font-size: 16px; font-weight: 800; color: #0f172a;">support@porarghor.com</div>
+          <div style="font-size: 12px; color: #94a3b8;">যেকোনো সময় ইমেইল করতে পারেন</div>
+        </div>
+      </div>
+
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; display: flex; gap: 16px; align-items: center;">
+        <div style="width: 48px; height: 48px; border-radius: 12px; background: #e0f2fe; color: #0174C7; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+          📍
+        </div>
+        <div>
+          <div style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 700;">স্টুডিও ও অফিস</div>
+          <div style="font-size: 16px; font-weight: 800; color: #0f172a;">বাড়ি ১৮, নুরজাহান রোড, মোহাম্মদপুর, ঢাকা ১২০৭</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Form -->
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 36px; box-shadow: var(--shadow-card);">
+      <h3 style="font-size: 22px; font-weight: 800; margin-bottom: 20px;">আমাদের কাছে লিখুন</h3>
+      <form method="post">
+        <div class="form-group">
+          <label for="name">আপনার নাম</label>
+          <input class="form-input" id="name" name="name" placeholder="আপনার পূর্ণ নাম লিখুন" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">মোবাইল নম্বর</label>
+          <input class="form-input" id="phone" name="phone" placeholder="০১XXXXXXXXX" required>
+        </div>
+        <div class="form-group">
+          <label for="msg">কী জানতে চান বা আপনার জিজ্ঞাসা</label>
+          <textarea class="form-input" id="msg" name="msg" rows="4" placeholder="আপনার প্রশ্ন বা মতামত বিস্তারিত লিখুন..." required></textarea>
+        </div>
+        <button class="btn-cta" type="submit" style="width: 100%; padding: 13px; font-size: 15px; border-radius: 12px;">
+          <span>মেসেজ পাঠান</span>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

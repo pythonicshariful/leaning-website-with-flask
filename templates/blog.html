@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}ক্যারিয়ার ব্লগ ও খবরাখবর — পড়ারঘর{% endblock %}
+{% block content %}
+<div class="container" style="padding-top: 40px; padding-bottom: 60px;">
+  <div style="margin-bottom: 32px; display: flex; flex-direction: column; gap: 20px;">
+    <div>
+      <div class="section-header__tag">নলেজ হাব</div>
+      <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 8px;">ক্যারিয়ার গাইড ও ব্লগ</h1>
+      <p style="color: #64748b; font-size: 16px;">চাকরি, ফ্রিল্যান্সিং, সিভি মেকিং ও ডিজিটাল কাজের প্র্যাকটিক্যাল পরামর্শ।</p>
+    </div>
+    
+    <form method="get" style="display: flex; gap: 10px; max-width: 480px;">
+      <input class="form-input" type="search" name="q" value="{{ q }}" placeholder="সিভি, অ্যাডস, এক্সেল সার্চ করুন...">
+      <button class="btn-cta" type="submit" style="padding: 10px 24px; border-radius: 10px;">খুঁজুন</button>
+    </form>
+  </div>
+
+  {% if posts %}
+    <div class="blog-grid">
+      {% for p in posts %}
+        <article class="blog-card">
+          <div class="blog-card__date">{{ p.date }}</div>
+          <span class="blog-card__tag">{{ p.tag }}</span>
+          <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 10px; line-height: 1.4;">{{ p.title }}</h2>
+          <p>{{ p.body }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="background: #ffffff; padding: 48px; border-radius: 16px; text-align: center; border: 1px solid #e2e8f0;">
+      <p style="font-size: 18px; color: #64748b; margin-bottom: 12px;">আপনার খোঁজা অনুযায়ী কোনো পোস্ট পাওয়া যায়নি।</p>
+      <a class="btn-primary" href="{{ url_for('blog') }}">সকল ব্লগ দেখুন</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

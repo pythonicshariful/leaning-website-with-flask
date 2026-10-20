@@ -1,0 +1,91 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}বান্ডেল প্যাকেজ — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}বান্ডেল প্যাকেজ ব্যবস্থাপনা{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; align-items: start;">
+  <!-- Bundles List -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">বর্তমান বান্ডেল তালিকা ({{ bundles|length }}টি)</div>
+    </div>
+    <div class="admin-card__body" style="padding: 0;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>বান্ডেল শিরোনাম</th>
+            <th>মূল্য</th>
+            <th>পূর্বের মূল্য</th>
+            <th>কোর্স সংখ্যা</th>
+            <th>অ্যাকশন</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bundles %}
+            <tr>
+              <td>
+                <strong>{{ b.title }}</strong><br>
+                <small style="color: #64748b;">ID: <code>{{ b.id }}</code></small><br>
+                <small style="color: #475569;">{{ b.note }}</small>
+              </td>
+              <td><strong style="color: #ea580c;">{{ b.price|taka }}</strong></td>
+              <td><s style="color: #94a3b8;">{{ b.old|taka }}</s></td>
+              <td>{{ b.includes|length }}টি কোর্স</td>
+              <td>
+                <a href="{{ url_for('admin_bundle_delete', bid=b.id) }}" class="btn-admin btn-admin-danger" style="padding: 4px 8px; font-size: 12px;" onclick="return confirm('বান্ডেলটি মুছে ফেলতে চান?');">মুছুন</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create New Bundle -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">+ নতুন বান্ডেল তৈরি করুন</div>
+    </div>
+    <div class="admin-card__body">
+      <form method="post" action="{{ url_for('admin_bundle_save') }}">
+        <div class="admin-form-group">
+          <label for="id">বান্ডেল আইডি (ID) *</label>
+          <input class="admin-input" id="id" name="id" placeholder="যেমন: office-pack" required style="font-family: monospace;">
+        </div>
+        <div class="admin-form-group">
+          <label for="title">বান্ডেল শিরোনাম *</label>
+          <input class="admin-input" id="title" name="title" placeholder="যেমন: অফিস প্যাক" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="admin-form-group">
+            <label for="price">বর্তমান প্যাকেজ মূল্য (টাকা) *</label>
+            <input class="admin-input" type="number" id="price" name="price" placeholder="2890" required>
+          </div>
+          <div class="admin-form-group">
+            <label for="old">আসল মূল্য (টাকা)</label>
+            <input class="admin-input" type="number" id="old" name="old" placeholder="4280">
+          </div>
+        </div>
+        <div class="admin-form-group">
+          <label>অন্তর্ভুক্ত কোর্সসমূহ নির্বাচন করুন (Select Courses):</label>
+          <div style="max-height: 160px; overflow-y: auto; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
+            {% for c in all_courses %}
+              <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px; cursor: pointer;">
+                <input type="checkbox" name="includes" value="{{ c.id }}">
+                <span>{{ c.title }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="admin-form-group">
+          <label for="note">ছোট নোট / বিবরণ</label>
+          <input class="admin-input" id="note" name="note" placeholder="যেমন: চাকরির ইন্টারভিউয়ের আগে তিন মাস।">
+        </div>
+        <button class="btn-admin btn-admin-primary" type="submit" style="width: 100%; justify-content: center; padding: 12px;">
+          + বান্ডেল সংরক্ষণ করুন
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

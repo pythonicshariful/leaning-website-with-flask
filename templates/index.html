@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% block title %}{{ settings.site_title }}{% endblock %}
+{% block content %}
+
+<!-- Hero Section (Controlled from Admin) -->
+<section class="hero">
+  <div class="container hero__grid">
+    <div class="hero__copy">
+      {% if settings.hero_pill %}
+        <div class="hero__pill">
+          <span>{{ settings.hero_pill }}</span>
+        </div>
+      {% endif %}
+      <h1>{{ settings.hero_title|safe }}</h1>
+      <p class="hero__desc">{{ settings.hero_desc }}</p>
+      
+      <div class="hero__buttons">
+        <a class="btn-primary" href="{{ settings.hero_btn1_link or url_for('courses') }}">
+          <span>{{ settings.hero_btn1_text or 'কোর্সগুলো দেখুন' }}</span>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+        <a class="btn-secondary" href="{{ settings.hero_btn2_link or url_for('workshops') }}">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <span>{{ settings.hero_btn2_text or 'আসন্ন লাইভ ওয়ার্কশপ' }}</span>
+        </a>
+      </div>
+
+      <div class="hero__stats">
+        <div class="hero__stat-item">
+          <div>
+            <div class="hero__stat-num">{{ settings.hero_stat_students }}</div>
+            <div class="hero__stat-label">{{ settings.hero_stat_students_label or 'সক্রিয় শিক্ষার্থী' }}</div>
+          </div>
+        </div>
+        <div class="hero__stat-item">
+          <div>
+            <div class="hero__stat-num">{{ settings.hero_stat_rating }}</div>
+            <div class="hero__stat-label">{{ settings.hero_stat_rating_label or 'গড় রেটিং (১,২০০+ রিভিউ)' }}</div>
+          </div>
+        </div>
+        <div class="hero__stat-item">
+          <div>
+            <div class="hero__stat-num">{{ settings.hero_stat_projects }}</div>
+            <div class="hero__stat-label">{{ settings.hero_stat_projects_label or 'হাতে-কলমে প্রজেক্ট' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Right Visual -->
+    <div class="hero-visual">
+      <div class="hero-visual__card">
+        <img src="{{ settings.hero_image or url_for('static', filename='images/hero.jpg') }}" alt="{{ settings.brand_name }}">
+        <div class="hero-badge-float hero-badge-float--top">
+          <span class="badge-dot"></span>
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #0f172a;">{{ settings.hero_float1_title or 'লাইভ মেন্টরশিপ সাপোর্ট' }}</div>
+            <div style="font-size: 11px; color: #64748b;">{{ settings.hero_float1_desc or 'সরাসরি মেন্টরের সাথে প্রশ্ন-উত্তর' }}</div>
+          </div>
+        </div>
+        <div class="hero-badge-float hero-badge-float--bottom">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0174C7" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <div>
+            <div style="font-size: 13px; font-weight: 700; color: #0f172a;">{{ settings.hero_float2_title or 'যাচাইকৃত সার্টিফিকেট' }}</div>
+            <div style="font-size: 11px; color: #64748b;">{{ settings.hero_float2_desc or 'ক্যারিয়ার প্রোফাইলে যুক্ত করার মতো' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Value Strip (Dynamic from DB) -->
+<div class="trust-strip">
+  <div class="container trust-strip__grid">
+    {% for t in trust_items %}
+      <div class="trust-item">
+        <div class="trust-item__icon">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        </div>
+        <div class="trust-item__text">
+          <h4>{{ t.title }}</h4>
+          <p>{{ t.desc }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Featured Courses Section (Dynamic from DB) -->
+<section class="section-courses">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-header__tag">{{ settings.courses_tag or 'সেরা কোর্সসমূহ' }}</div>
+        <h2>{{ settings.courses_title or 'জনপ্রিয় ও প্র্যাকটিক্যাল কোর্স' }}</h2>
+        <p>{{ settings.courses_desc or 'চাকরি ও ফ্রিল্যান্সিংয়ে সবচেয়ে বেশি প্রয়োজন হয় এমন দক্ষতার কোর্সগুলো বেছে নিন' }}</p>
+      </div>
+      <a class="section-header__link" href="{{ url_for('courses') }}">
+        <span>সব কোর্স দেখুন</span>
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </a>
+    </div>
+
+    <!-- Course Cards Grid -->
+    <div class="course-grid">
+      {% for c in featured %}
+        <article class="course-card">
+          <!-- Thumbnail with Image -->
+          <a class="course-card__thumb-wrap" href="{{ url_for('course', cid=c.id) }}">
+            <img class="course-card__thumb" src="{{ c.image }}" alt="{{ c.title }}" loading="lazy">
+            {% if c.badge %}
+              <span class="course-card__badge-left">{{ c.badge }}</span>
+            {% endif %}
+            {% if c.tag %}
+              <span class="course-card__badge-right">{{ c.tag }}</span>
+            {% endif %}
+          </a>
+
+          <!-- Body -->
+          <div class="course-card__body">
+            <div class="course-card__meta-bar">
+              <span class="course-card__category">{{ c.category }}</span>
+              <div class="course-card__rating">
+                <span>★</span>
+                <span>{{ c.rating or '4.9' }}</span>
+                <span class="course-card__reviews-count">({{ c.reviews or '120' }})</span>
+              </div>
+            </div>
+
+            <h3 class="course-card__title">
+              <a href="{{ url_for('course', cid=c.id) }}">{{ c.title }}</a>
+            </h3>
+            <p class="course-card__desc">{{ c.short }}</p>
+
+            <!-- Instructor -->
+            <div class="course-card__instructor">
+              <div class="instructor-avatar">
+                {{ c.instructor[:1] }}
+              </div>
+              <div class="instructor-info">
+                <span class="instructor-name">{{ c.instructor }}</span>
+                <span class="instructor-role">{{ c.role }}</span>
+              </div>
+            </div>
+
+            <!-- Meta Chips -->
+            <div class="course-card__chips">
+              <div class="course-card__chip-item">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                <span>{{ c.hours }} ঘণ্টা</span>
+              </div>
+              <div class="course-card__chip-item">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                <span>{{ c.lessons }} পাঠ</span>
+              </div>
+              <div class="course-card__chip-item">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                <span>{{ c.students }} জন</span>
+              </div>
+            </div>
+
+            <!-- Price & Button -->
+            <div class="course-card__footer">
+              <div class="course-card__price-box">
+                <span class="price-now">{{ c.price|taka }}</span>
+                {% if c.old %}
+                  <span class="price-old">{{ c.old|taka }}</span>
+                {% endif %}
+              </div>
+              <a class="btn-enroll-card" href="{{ url_for('course', cid=c.id) }}">
+                <span>বিস্তারিত</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Upcoming Live Workshops Section (Dynamic from DB) -->
+<section class="section-workshops">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-header__tag">{{ settings.workshops_tag or 'ইন্টারেক্টিভ লার্নিং' }}</div>
+        <h2>{{ settings.workshops_title or 'আসন্ন লাইভ ওয়ার্কশপ' }}</h2>
+        <p>{{ settings.workshops_desc or 'সরাসরি মেন্টরের সাথে বসে ৩ ঘণ্টায় হাতে-কলমে একটা প্রজেক্ট শেষ করুন' }}</p>
+      </div>
+      <a class="section-header__link" href="{{ url_for('workshops') }}">
+        <span>সব ওয়ার্কশপ দেখুন</span>
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </a>
+    </div>
+
+    <div class="workshop-grid">
+      {% for w in workshops %}
+        <article class="workshop-card">
+          <span class="workshop-card__status">{{ w.seats }}</span>
+          <h3>{{ w.title }}</h3>
+          <div class="workshop-card__meta">
+            <div class="workshop-card__meta-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              <span>{{ w.when }}</span>
+            </div>
+            <div class="workshop-card__meta-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <span>{{ w.place }}</span>
+            </div>
+          </div>
+          <div class="workshop-card__footer">
+            <span class="workshop-price">{{ w.price|taka }}</span>
+            <form method="post" action="{{ url_for('enroll', kind='workshop', cid=w.id) }}" style="margin: 0;">
+              <button class="btn-cta" type="submit" style="padding: 8px 18px; font-size: 13px;">সিট বুক করুন</button>
+            </form>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us / Features Section (Dynamic from DB) -->
+<section class="section-features">
+  <div class="container">
+    <div style="text-align: center; max-width: 650px; margin: 0 auto 48px;">
+      <div class="section-header__tag" style="display: inline-block;">{{ settings.features_tag or 'পড়ারঘরের বৈশিষ্ট্য' }}</div>
+      <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 12px;">{{ settings.features_title or 'কেন হাজারো তরুণ-তরুণী আমাদের ওপর আস্থা রাখছেন?' }}</h2>
+      <p style="color: #64748b; font-size: 16px;">{{ settings.features_desc or 'আমরা কোনো জটিল থিওরি বা অপ্রয়োজনীয় সিলেবাস করাই না। যেটুকু জানলে সরাসরি কাজ পাওয়া যায়, সেটুকুই শেখাই।' }}</p>
+    </div>
+
+    <div class="features-grid">
+      {% for f in feature_items %}
+        <div class="feature-box">
+          <div class="feature-box__icon">
+            <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          </div>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.desc }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Blog and Insights Section (Dynamic from DB) -->
+<section class="section-blog">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <div class="section-header__tag">{{ settings.blog_tag or 'নলেজ হাব' }}</div>
+        <h2>{{ settings.blog_title or 'ক্যারিয়ার টিপস ও গাইডলাইন' }}</h2>
+        <p>{{ settings.blog_desc or 'চাকরি ও ফ্রিল্যান্সিংয়ে প্রতিদিনের সাধারণ ভুলগুলো শুধরে নেওয়ার জরুরি পরামর্শ' }}</p>
+      </div>
+      <a class="section-header__link" href="{{ url_for('blog') }}">
+        <span>সব লেখা পড়ুন</span>
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </a>
+    </div>
+
+    <div class="blog-grid">
+      {% for p in posts %}
+        <article class="blog-card">
+          <div class="blog-card__date">{{ p.date }}</div>
+          <span class="blog-card__tag">{{ p.tag }}</span>
+          <h3>{{ p.title }}</h3>
+          <p>{{ p.body }}</p>
+          <a class="blog-card__readmore" href="{{ url_for('blog') }}">
+            <span>পুরোটা পড়ুন</span>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

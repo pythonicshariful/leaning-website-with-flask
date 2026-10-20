@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}লাইভ ওয়ার্কশপ — পড়ারঘর{% endblock %}
+{% block content %}
+<div class="container" style="padding-top: 40px; padding-bottom: 60px;">
+  <div style="margin-bottom: 32px;">
+    <div class="section-header__tag">ইন্টারেক্টিভ লার্নিং</div>
+    <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 8px;">আসন্ন লাইভ ওয়ার্কশপসমূহ</h1>
+    <p style="color: #64748b; font-size: 16px;">তিন ঘণ্টায় সরাসরি মেন্টরের সাথে বসে একটা প্রজেক্ট সম্পূর্ণ করার প্র্যাকটিক্যাল সেশন। প্রতিটি সেশনের ফুল রেকর্ডিং প্রদান করা হয়।</p>
+  </div>
+
+  <div class="workshop-grid">
+    {% for w in workshops %}
+      <article class="workshop-card">
+        <span class="workshop-card__status">{{ w.seats }}</span>
+        <h3>{{ w.title }}</h3>
+        <div class="workshop-card__meta">
+          <div class="workshop-card__meta-item">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span><strong>তারিখ ও সময়:</strong> {{ w.when }}</span>
+          </div>
+          <div class="workshop-card__meta-item">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span><strong>স্থান / মাধ্যম:</strong> {{ w.place }}</span>
+          </div>
+        </div>
+        <div class="workshop-card__footer">
+          <div>
+            <div style="font-size: 12px; color: #64748b;">রেজিস্ট্রেশন ফি</div>
+            <span class="workshop-price" style="color: #ea580c;">{{ w.price|taka }}</span>
+          </div>
+          <form method="post" action="{{ url_for('enroll', kind='workshop', cid=w.id) }}" style="margin: 0;">
+            <button class="btn-cta" type="submit" style="padding: 10px 22px; font-size: 14px;">সিট নিশ্চিত করুন</button>
+          </form>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

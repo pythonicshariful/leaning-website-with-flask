@@ -1,0 +1,98 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}ওভারভিউ ড্যাশবোর্ড — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}ওভারভিউ ড্যাশবোর্ড{% endblock %}
+
+{% block content %}
+
+<!-- Stats Cards -->
+<div class="admin-stats-grid">
+  <div class="admin-stat-card">
+    <div class="admin-stat-card__title">মোট কোর্স</div>
+    <div class="admin-stat-card__val">{{ courses|length }}</div>
+    <a href="{{ url_for('admin_courses') }}" style="font-size: 12px; color: #0174C7;">কোর্স ম্যানেজ করুন →</a>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-card__title">সক্রিয় লাইভ ওয়ার্কশপ</div>
+    <div class="admin-stat-card__val">{{ workshops|length }}</div>
+    <a href="{{ url_for('admin_workshops') }}" style="font-size: 12px; color: #0174C7;">ওয়ার্কশপ দেখুন →</a>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-card__title">বান্ডেল প্যাক</div>
+    <div class="admin-stat-card__val">{{ bundles|length }}</div>
+    <a href="{{ url_for('admin_bundles') }}" style="font-size: 12px; color: #0174C7;">বান্ডেল ম্যানেজ করুন →</a>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-card__title">ই-বুক ও রিসোর্স</div>
+    <div class="admin-stat-card__val">{{ ebooks|length }}</div>
+    <a href="{{ url_for('admin_ebooks') }}" style="font-size: 12px; color: #0174C7;">ই-বুক দেখুন →</a>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-card__title">ব্লগ পোস্ট</div>
+    <div class="admin-stat-card__val">{{ posts|length }}</div>
+    <a href="{{ url_for('admin_posts') }}" style="font-size: 12px; color: #0174C7;">পোস্ট এডিট করুন →</a>
+  </div>
+  <div class="admin-stat-card">
+    <div class="admin-stat-card__title">নতুন মেসেজ / ভর্তি রিকোয়েস্ট</div>
+    <div class="admin-stat-card__val" style="color: #ea580c;">{{ messages|length + enrollments|length }}</div>
+    <a href="{{ url_for('admin_messages') }}" style="font-size: 12px; color: #ea580c;">ইনবক্স দেখুন →</a>
+  </div>
+</div>
+
+<!-- Quick Action Strip -->
+<div style="background: #ffffff; padding: 20px 24px; border-radius: 12px; border: 1px solid var(--admin-border); margin-bottom: 30px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+  <div>
+    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">সহজ শর্টকাট</h3>
+    <p style="font-size: 13px; color: var(--admin-text-muted); margin: 0;">যেকোনো সেকশন সরাসরি আপডেট ও এডিট করতে নিচের বাটনগুলো ব্যবহার করুন</p>
+  </div>
+  <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+    <a href="{{ url_for('admin_course_new') }}" class="btn-admin btn-admin-primary">+ নতুন কোর্স যোগ করুন</a>
+    <a href="{{ url_for('admin_settings') }}" class="btn-admin btn-admin-secondary">সাইট সেটিংস ও ব্যানার এডিট</a>
+  </div>
+</div>
+
+<!-- Courses Quick Overview Table -->
+<div class="admin-card">
+  <div class="admin-card__header">
+    <div class="admin-card__title">বিদ্যমান সকল কোর্সসমূহ</div>
+    <a href="{{ url_for('admin_course_new') }}" class="btn-admin btn-admin-primary" style="font-size: 12px;">+ নতুন কোর্স</a>
+  </div>
+  <div class="admin-card__body" style="padding: 0;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>থাম্বনেইল</th>
+          <th>কোর্স নাম</th>
+          <th>ক্যাটাগরি</th>
+          <th>বর্তমান মূল্য</th>
+          <th>আসল মূল্য</th>
+          <th>ইন্সট্রাক্টর</th>
+          <th>রেটিং</th>
+          <th>অ্যাকশন</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in courses %}
+          <tr>
+            <td>
+              <img class="thumb-mini" src="{{ c.image }}" alt="">
+            </td>
+            <td>
+              <strong>{{ c.title }}</strong><br>
+              <small style="color: #64748b;">ID: <code>{{ c.id }}</code> · {{ c.hours }} ঘণ্টা</small>
+            </td>
+            <td><span style="background: #e0f2fe; color: #0174C7; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">{{ c.category }}</span></td>
+            <td><strong style="color: #ea580c;">{{ c.price|taka }}</strong></td>
+            <td><s style="color: #94a3b8;">{{ c.old|taka }}</s></td>
+            <td>{{ c.instructor }}</td>
+            <td>★ {{ c.rating }} ({{ c.reviews }})</td>
+            <td>
+              <a href="{{ url_for('admin_course_edit', cid=c.id) }}" class="btn-admin btn-admin-primary" style="padding: 5px 10px; font-size: 12px;">এডিট</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

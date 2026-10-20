@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Flask and local configuration
+.env
+.env.*
+!.env.example
+instance/
+
+# Runtime-generated files
+static/uploads/
+*.log
+
+# Test and coverage output
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini

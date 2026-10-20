@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}সাইন ইন / লগইন — পড়ারঘর{% endblock %}
+{% block content %}
+<div class="container" style="padding-top: 50px; padding-bottom: 70px;">
+  <div class="auth-box">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <div style="display: inline-flex; width: 54px; height: 54px; background: #e0f2fe; color: #0174C7; border-radius: 16px; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 12px;">
+        🔐
+      </div>
+      <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 6px;">শিক্ষার্থী লগইন</h1>
+      <p style="font-size: 14px; color: #64748b;">আপনার মোবাইল নম্বর দিয়ে সরাসরি ড্যাশবোর্ডে প্রবেশ করুন</p>
+    </div>
+
+    <form method="post">
+      <div class="form-group">
+        <label for="phone">মোবাইল নম্বর</label>
+        <input class="form-input" id="phone" name="phone" placeholder="০১XXXXXXXXX" required>
+      </div>
+      <div class="form-group">
+        <label for="name">আপনার নাম (ঐচ্ছিক)</label>
+        <input class="form-input" id="name" name="name" placeholder="যেমন: তানভীর আহমেদ">
+      </div>
+      <button class="btn-cta" type="submit" style="width: 100%; padding: 13px; font-size: 15px; border-radius: 12px; margin-top: 8px;">
+        <span>লগইন করুন</span>
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </button>
+    </form>
+
+    <div style="margin-top: 24px; text-align: center; font-size: 13px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+      কোনো অ্যাকাউন্ট তৈরি করা লাগবে না, সরাসরি ফোন নম্বর দিয়েই লগইন সম্পন্ন হবে।
+    </div>
+  </div>
+</div>
+{% endblock %}

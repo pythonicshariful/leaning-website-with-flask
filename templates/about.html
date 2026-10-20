@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}আমাদের সম্পর্কে — পড়ারঘর{% endblock %}
+{% block content %}
+<div class="container" style="padding-top: 50px; padding-bottom: 70px; max-width: 900px;">
+  <div style="margin-bottom: 36px; text-align: center;">
+    <div class="section-header__tag">আমাদের গল্প</div>
+    <h1 style="font-size: 38px; font-weight: 800; margin-bottom: 12px; color: #0f172a;">সহজ ভাষায় কাজের স্কিল শেখার ঠিকানা</h1>
+    <p style="font-size: 18px; color: #64748b; line-height: 1.6;">আমরা কোনো সনাতন কোচিং নই — সরাসরি অফিসে ও ফ্রিল্যান্সিংয়ে যা কাজে লাগে, ঠিক ততটুকুই নিখুঁতভাবে শেখাই।</p>
+  </div>
+
+  <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 40px; box-shadow: var(--shadow-sm); margin-bottom: 40px; font-size: 16px; line-height: 1.8; color: #334155;">
+    <p style="margin-bottom: 16px;">
+      ২০১৯ সালে ঢাকার মোহাম্মদপুরে ছোট্ট এক রুমে একদল উদ্যমী তরুণের এক্সেল আর ডাটা অ্যানালাইসিস শেখার মধ্য দিয়ে পড়ারঘরের যাত্রা শুরু। ইন্টারনেটে হাজারো ফ্রি ভিডিও ছিল, কিন্তু কাজ করতে গিয়ে আটকে গেলে সমাধান দেওয়ার বা ফাইল ধরে গাইড করার মতো কেউ ছিল না। সেই সমস্যা থেকেই পড়ারঘরের জন্ম।
+    </p>
+    <p style="margin-bottom: 16px;">
+      আমরা কোনো অবাস্তব "চাকরির ১০০% গ্যারান্টি" বিক্রি করি না। আমরা বাস্তবমুখী ফাইল দিই, নিয়মিত হোমওয়ার্ক চেক করি এবং শিক্ষার্থী যতক্ষণ না নিজে হাতে কাজ করতে পারছে, ততক্ষণ নিবিড় মেন্টরশিপ সাপোর্ট নিশ্চিত করি।
+    </p>
+    <p>
+      আজ ২৫,০০০+ এরও বেশি শিক্ষার্থী আমাদের কোর্স ও ওয়ার্কশপ থেকে সরাসরি উপকৃত হয়ে দেশের শীর্ষস্থানীয় প্রতিষ্ঠানে কিংবা গ্লোবাল মার্কেটপ্লেসে কাজ করছেন।
+    </p>
+  </div>
+
+  <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 24px; text-align: center;">অভিজ্ঞ মেন্টর ও ইন্সট্রাক্টর প্যানেল</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+    {% for name, job in team %}
+      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; text-align: center; box-shadow: var(--shadow-sm);">
+        <div class="instructor-avatar" style="width: 54px; height: 54px; font-size: 20px; margin: 0 auto 14px;">
+          {{ name[:1] }}
+        </div>
+        <h3 style="font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">{{ name }}</h3>
+        <p style="font-size: 13px; color: #0174C7; font-weight: 600;">{{ job }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

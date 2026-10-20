@@ -1,0 +1,67 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}কোর্সসমূহ ম্যানেজ করুন — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}কোর্স তালিকা ও ব্যবস্থাপনা{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+  <div class="admin-card__header">
+    <div>
+      <div class="admin-card__title">সকল কোর্সসমূহ ({{ courses|length }}টি)</div>
+      <div style="font-size: 13px; color: var(--admin-text-muted);">কোর্সের তথ্য, থাম্বনেইল, দাম বা সিলেবাস পরিবর্তন করতে এডিট বাটনে ক্লিক করুন</div>
+    </div>
+    <a href="{{ url_for('admin_course_new') }}" class="btn-admin btn-admin-primary">
+      + নতুন কোর্স যুক্ত করুন
+    </a>
+  </div>
+  <div class="admin-card__body" style="padding: 0;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>থাম্বনেইল</th>
+          <th>কোর্স নাম ও আইডি</th>
+          <th>ক্যাটাগরি</th>
+          <th>বর্তমান মূল্য</th>
+          <th>আসল মূল্য</th>
+          <th>ইন্সট্রাক্টর</th>
+          <th>শিক্ষার্থী</th>
+          <th>রেটিং</th>
+          <th>অ্যাকশন</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in courses %}
+          <tr>
+            <td>
+              <img class="thumb-mini" src="{{ c.image }}" alt="">
+            </td>
+            <td>
+              <strong style="font-size: 15px;">{{ c.title }}</strong><br>
+              <small style="color: #64748b;">ID: <code>{{ c.id }}</code> · ব্যাজ: {{ c.badge }} · ট্যাগ: {{ c.tag }}</small>
+            </td>
+            <td>
+              <span style="background: #e0f2fe; color: #0174C7; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">
+                {{ c.category }}
+              </span>
+            </td>
+            <td><strong style="color: #ea580c; font-size: 15px;">{{ c.price|taka }}</strong></td>
+            <td><s style="color: #94a3b8;">{{ c.old|taka }}</s></td>
+            <td>
+              <strong>{{ c.instructor }}</strong><br>
+              <small style="color: #64748b;">{{ c.role }}</small>
+            </td>
+            <td>{{ c.students }} জন</td>
+            <td>★ {{ c.rating }} ({{ c.reviews }})</td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <a href="{{ url_for('admin_course_edit', cid=c.id) }}" class="btn-admin btn-admin-primary" style="padding: 5px 10px; font-size: 12px;">এডিট</a>
+                <a href="{{ url_for('course', cid=c.id) }}" target="_blank" class="btn-admin btn-admin-secondary" style="padding: 5px 8px; font-size: 12px;" title="লাইভ পেজ দেখুন">👁</a>
+                <a href="{{ url_for('admin_course_delete', cid=c.id) }}" class="btn-admin btn-admin-danger" style="padding: 5px 10px; font-size: 12px;" onclick="return confirm('আপনি কি নিশ্চিত এই কোর্সটি মুছে ফেলতে চান?');">মুছুন</a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

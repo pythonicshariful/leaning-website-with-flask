@@ -1,0 +1,104 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}অফার ও ডিসকাউন্ট — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}অফার ও ডিসকাউন্ট ব্যবস্থাপনা{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; align-items: start;">
+  <!-- Offers List -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">বর্তমান অফার ও প্রমো কোড তালিকা</div>
+    </div>
+    <div class="admin-card__body" style="padding: 0;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>কুপন কোড</th>
+            <th>অফারের শিরোনাম</th>
+            <th>ছাড় / ডিসকাউন্ট</th>
+            <th>মেয়াদ</th>
+            <th>স্ট্যাটাস</th>
+            <th>অ্যাকশন</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in offers %}
+            <tr>
+              <td><code style="background: #e0f2fe; color: #0174C7; padding: 3px 8px; border-radius: 4px; font-weight: bold;">{{ o.code }}</code></td>
+              <td>
+                <strong>{{ o.title }}</strong><br>
+                <small style="color: #64748b;">{{ o.note }}</small>
+              </td>
+              <td>
+                <strong style="color: #ea580c;">
+                  {{ o.discount_value }}{{ '%' if o.discount_type == 'percent' else ' ৳' }}
+                </strong>
+              </td>
+              <td>{{ o.valid_until }}</td>
+              <td>
+                {% if o.is_active %}
+                  <span style="background: #ecfdf5; color: #059669; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 700;">সক্রিয়</span>
+                {% else %}
+                  <span style="background: #f1f5f9; color: #64748b; padding: 2px 8px; border-radius: 4px; font-size: 12px;">নিষ্ক্রিয়</span>
+                {% endif %}
+              </td>
+              <td>
+                <a href="{{ url_for('admin_offer_delete', oid=o.id) }}" class="btn-admin btn-admin-danger" style="padding: 4px 8px; font-size: 12px;" onclick="return confirm('অফারটি মুছে ফেলতে চান?');">মুছুন</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create New Offer -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">+ নতুন অফার বা কুপন যোগ করুন</div>
+    </div>
+    <div class="admin-card__body">
+      <form method="post" action="{{ url_for('admin_offer_save') }}">
+        <div class="admin-form-group">
+          <label for="code">প্রমো কোড (Promo Code) *</label>
+          <input class="admin-input" id="code" name="code" placeholder="যেমন: PORA50" required style="font-family: monospace; text-transform: uppercase;">
+        </div>
+        <div class="admin-form-group">
+          <label for="title">অফারের নাম / ক্যাম্পেইন শিরোনাম *</label>
+          <input class="admin-input" id="title" name="title" placeholder="যেমন: নতুন ব্যাচে ভর্তি ছাড়" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="admin-form-group">
+            <label for="discount_type">ছাড়ের ধরন</label>
+            <select class="admin-select" id="discount_type" name="discount_type">
+              <option value="percent">শতাংশ (%)</option>
+              <option value="fixed">নির্দিষ্ট টাকা (৳)</option>
+            </select>
+          </div>
+          <div class="admin-form-group">
+            <label for="discount_value">পরিমাণ *</label>
+            <input class="admin-input" type="number" id="discount_value" name="discount_value" placeholder="50" required>
+          </div>
+        </div>
+        <div class="admin-form-group">
+          <label for="valid_until">মেয়াদ / শেষ তারিখ</label>
+          <input class="admin-input" id="valid_until" name="valid_until" placeholder="যেমন: ২৫ অক্টোবর ২০২৬">
+        </div>
+        <div class="admin-form-group">
+          <label for="note">সংক্ষিপ্ত নির্দেশিকা</label>
+          <input class="admin-input" id="note" name="note" placeholder="যেমন: চেকআউটে কোডটি ব্যবহার করুন">
+        </div>
+        <div class="admin-form-group">
+          <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="checkbox" name="is_active" checked style="width: 18px; height: 18px;">
+            <span style="font-weight: 600;">অফারটি সরাসরি সাইটে চালু রাখুন</span>
+          </label>
+        </div>
+        <button class="btn-admin btn-admin-primary" type="submit" style="width: 100%; justify-content: center; padding: 12px;">
+          ✓ অফার সংরক্ষণ করুন
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

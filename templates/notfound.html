@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}পেজ পাওয়া যায়নি — পড়ারঘর{% endblock %}
+{% block content %}
+<div class="container" style="padding: 80px 20px; text-align: center; max-width: 600px;">
+  <div style="font-size: 72px; font-weight: 800; color: #0174C7; line-height: 1; margin-bottom: 16px;">৪০৪</div>
+  <h1 style="font-size: 28px; font-weight: 800; margin-bottom: 12px; color: #0f172a;">পৃষ্ঠাটি খুঁজে পাওয়া যায়নি</h1>
+  <p style="color: #64748b; font-size: 16px; margin-bottom: 28px;">আপনি যে লিঙ্কটি খুঁজছেন তা মুছে ফেলা হয়েছে অথবা ঠিকানা ভুল হতে পারে।</p>
+  <a class="btn-primary" href="{{ url_for('index') }}">হোমপেজে ফিরে যান</a>
+</div>
+{% endblock %}

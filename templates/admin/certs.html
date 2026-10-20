@@ -1,0 +1,71 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}সার্টিফিকেট যাচাই ডাটাবেজ — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}সার্টিফিকেট ভেরিফিকেশন ব্যবস্থাপনা{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; align-items: start;">
+  <!-- Certs List -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">অনুমোদিত সার্টিফিকেট তালিকা ({{ certs|length }}টি)</div>
+    </div>
+    <div class="admin-card__body" style="padding: 0;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>সার্টিফিকেট কোড</th>
+            <th>শিক্ষার্থীর নাম</th>
+            <th>সম্পন্নকৃত কোর্স</th>
+            <th>ইস্যুর তারিখ</th>
+            <th>অ্যাকশন</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for code, info in certs.items() %}
+            <tr>
+              <td><code style="background: #e0f2fe; color: #0174C7; padding: 3px 8px; border-radius: 4px; font-weight: bold;">{{ code }}</code></td>
+              <td><strong>{{ info.name }}</strong></td>
+              <td>{{ info.course }}</td>
+              <td>{{ info.date }}</td>
+              <td>
+                <a href="{{ url_for('admin_cert_delete', code=code) }}" class="btn-admin btn-admin-danger" style="padding: 4px 8px; font-size: 12px;" onclick="return confirm('সার্টিফিকেট রেকর্ডটি মুছে ফেলতে চান?');">মুছুন</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add New Certificate -->
+  <div class="admin-card">
+    <div class="admin-card__header">
+      <div class="admin-card__title">+ নতুন সার্টিফিকেট ইস্যু / যুক্ত করুন</div>
+    </div>
+    <div class="admin-card__body">
+      <form method="post" action="{{ url_for('admin_cert_save') }}">
+        <div class="admin-form-group">
+          <label for="code">সার্টিফিকেট কোড (ID) *</label>
+          <input class="admin-input" id="code" name="code" placeholder="যেমন: PG-5050" required style="font-family: monospace; text-transform: uppercase;">
+          <div class="hint">শিক্ষার্থীরা এই কোডটি দিয়ে ওয়েবসাইটে ভেরিফাই করতে পারবে</div>
+        </div>
+        <div class="admin-form-group">
+          <label for="name">শিক্ষার্থীর পুরো নাম *</label>
+          <input class="admin-input" id="name" name="name" placeholder="যেমন: মো: তানভীর আহমেদ" required>
+        </div>
+        <div class="admin-form-group">
+          <label for="course">কোর্সের নাম *</label>
+          <input class="admin-input" id="course" name="course" placeholder="যেমন: অফিস এক্সেল" required>
+        </div>
+        <div class="admin-form-group">
+          <label for="date">ইস্যু করার মাস / তারিখ</label>
+          <input class="admin-input" id="date" name="date" placeholder="যেমন: অক্টোবর ২০২৬">
+        </div>
+        <button class="btn-admin btn-admin-primary" type="submit" style="width: 100%; justify-content: center; padding: 12px;">
+          ✓ সার্টিফিকেট ডাটাবেজে সংরক্ষণ করুন
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

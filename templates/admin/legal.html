@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}লিগ্যাল পলিসি পেজ — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}লিগ্যাল ও পলিসি পেজ এডিটর{% endblock %}
+
+{% block content %}
+<div class="admin-card" style="max-width: 900px;">
+  <div class="admin-card__header">
+    <div class="admin-card__title">শর্তাবলী, প্রাইভেসি পলিসি ও রিফান্ড পলিসি পেজের কন্টেন্ট পরিবর্তন</div>
+  </div>
+  <div class="admin-card__body">
+    {% for key, item in legals.items() %}
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+        <form method="post">
+          <input type="hidden" name="page_key" value="{{ key }}">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="font-size: 17px; font-weight: 700; color: #0174C7; margin: 0;">
+              📄 পেজ: <code>/legal/{{ key }}</code>
+            </h3>
+            <a href="{{ url_for('legal', page=key) }}" target="_blank" class="btn-admin btn-admin-secondary" style="font-size: 12px;">লাইভ পেজ দেখুন ↗</a>
+          </div>
+          <div class="admin-form-group">
+            <label>পেজের মূল শিরোনাম (Page Title)</label>
+            <input class="admin-input" name="title" value="{{ item.title }}" required>
+          </div>
+          <div class="admin-form-group">
+            <label>পেজের বিস্তারিত বর্ণনা (HTML / টেক্সট সাপোর্টেড)</label>
+            <textarea class="admin-textarea" name="content" rows="6" required>{{ item.content }}</textarea>
+            <div class="hint">অনুচ্ছেদ তৈরি করতে &lt;p&gt;...&lt;/p&gt; অথবা সাধারণ টেক্সট ব্যবহার করতে পারেন।</div>
+          </div>
+          <button class="btn-admin btn-admin-primary" type="submit">
+            ✓ এই পেজটি আপডেট করুন
+          </button>
+        </form>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

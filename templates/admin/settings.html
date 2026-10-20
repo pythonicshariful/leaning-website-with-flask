@@ -1,0 +1,140 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}সাইট ও ফুটার সেটিংস — পড়ারঘর অ্যাডমিন{% endblock %}
+{% block page_title %}সাইট, হেডার ও ফুটার সেটিংস{% endblock %}
+
+{% block content %}
+<div class="admin-card" style="max-width: 960px;">
+  <div class="admin-card__header">
+    <div class="admin-card__title">ওয়েবসাইটের গ্লোবাল তথ্য, ব্যানার ও ফুটার টেক্সট পরিবর্তন</div>
+  </div>
+  <div class="admin-card__body">
+    <form method="post">
+      
+      <!-- Top Announcement Banner -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        📢 টপ নোটিফিকেশন / অফার ব্যানার
+      </h3>
+      <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 16px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700;">
+          <input type="checkbox" name="announcement_active" {{ 'checked' if settings.announcement_active else '' }} style="width: 18px; height: 18px;">
+          <span>টপ ব্যানার সক্রিয় রাখুন (Show announcement bar)</span>
+        </label>
+      </div>
+      <div style="display: grid; grid-template-columns: 140px 1fr 1fr; gap: 16px;">
+        <div class="admin-form-group">
+          <label for="announcement_badge">ব্যাজ টেক্সট</label>
+          <input class="admin-input" id="announcement_badge" name="announcement_badge" value="{{ settings.announcement_badge }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="announcement">ব্যানার টেক্সট / অফার ঘোষণা</label>
+          <input class="admin-input" id="announcement" name="announcement" value="{{ settings.announcement }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="announcement_link">ক্লিক লিংক URL</label>
+          <input class="admin-input" id="announcement_link" name="announcement_link" value="{{ settings.announcement_link }}">
+        </div>
+      </div>
+
+      <!-- Brand & Header -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-top: 30px; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        🏷️ ব্র্যান্ডিং ও হেডার
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        <div class="admin-form-group">
+          <label for="brand_name">ব্র্যান্ড নাম</label>
+          <input class="admin-input" id="brand_name" name="brand_name" value="{{ settings.brand_name }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="brand_tagline">ট্যাগলাইন</label>
+          <input class="admin-input" id="brand_tagline" name="brand_tagline" value="{{ settings.brand_tagline }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="brand_logo_text">লোগো আইকন অক্ষর (Letter)</label>
+          <input class="admin-input" id="brand_logo_text" name="brand_logo_text" value="{{ settings.brand_logo_text or 'প' }}" style="text-align: center; font-weight: bold;">
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        <div class="admin-form-group">
+          <label for="search_placeholder">সার্চ প্লেসহোল্ডার টেক্সট</label>
+          <input class="admin-input" id="search_placeholder" name="search_placeholder" value="{{ settings.search_placeholder }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="nav_cta_text">হেডার CTA বাটন টেক্সট</label>
+          <input class="admin-input" id="nav_cta_text" name="nav_cta_text" value="{{ settings.nav_cta_text }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="nav_cta_link">হেডার CTA বাটন লিংক</label>
+          <input class="admin-input" id="nav_cta_link" name="nav_cta_link" value="{{ settings.nav_cta_link }}">
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-top: 30px; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        📞 যোগাযোগ, হেল্পলাইন ও অফিস
+      </h3>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+        <div class="admin-form-group">
+          <label for="phone">হেল্পলাইন নম্বর</label>
+          <input class="admin-input" id="phone" name="phone" value="{{ settings.phone }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="phone_hours">কাজের সময়</label>
+          <input class="admin-input" id="phone_hours" name="phone_hours" value="{{ settings.phone_hours }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="email">অফিসিয়াল ইমেইল</label>
+          <input class="admin-input" id="email" name="email" value="{{ settings.email }}">
+        </div>
+      </div>
+      <div class="admin-form-group">
+        <label for="address">স্টুডিও ও অফিস ঠিকানা</label>
+        <textarea class="admin-textarea" id="address" name="address" rows="2">{{ settings.address }}</textarea>
+      </div>
+
+      <!-- Footer Customization -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-top: 30px; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        📄 ফুটার ও স্টুডিও সহায়তা বক্স
+      </h3>
+      <div class="admin-form-group">
+        <label for="footer_about">ফুটার পরিচিতি টেক্সট</label>
+        <textarea class="admin-textarea" id="footer_about" name="footer_about" rows="3">{{ settings.footer_about }}</textarea>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="admin-form-group">
+          <label for="studio_help_title">স্টুডিও হেল্প বক্স শিরোনাম</label>
+          <input class="admin-input" id="studio_help_title" name="studio_help_title" value="{{ settings.studio_help_title }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="studio_help_desc">স্টুডিও হেল্প বক্স বিবরণ</label>
+          <input class="admin-input" id="studio_help_desc" name="studio_help_desc" value="{{ settings.studio_help_desc }}">
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="admin-form-group">
+          <label for="footer_copyright">কপিরাইট মূল টেক্সট</label>
+          <input class="admin-input" id="footer_copyright" name="footer_copyright" value="{{ settings.footer_copyright }}">
+        </div>
+        <div class="admin-form-group">
+          <label for="footer_sub_copyright">কপিরাইট সাব-টেক্সট</label>
+          <input class="admin-input" id="footer_sub_copyright" name="footer_sub_copyright" value="{{ settings.footer_sub_copyright }}">
+        </div>
+      </div>
+
+      <!-- Site Title & SEO -->
+      <h3 style="font-size: 16px; font-weight: 700; color: #0174C7; margin-top: 30px; margin-bottom: 16px; border-bottom: 2px solid #e0f2fe; padding-bottom: 8px;">
+        🌐 এসইও ও ব্রাউজার টাইটেল (SEO)
+      </h3>
+      <div class="admin-form-group">
+        <label for="site_title">ডিফল্ট ব্রাউজার সাইট টাইটেল (Meta Title)</label>
+        <input class="admin-input" id="site_title" name="site_title" value="{{ settings.site_title }}">
+      </div>
+
+      <div style="margin-top: 30px; display: flex; gap: 12px;">
+        <button class="btn-admin btn-admin-primary" type="submit" style="padding: 12px 28px; font-size: 15px;">
+          ✓ সকল সেটিংস সংরক্ষণ করুন
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
