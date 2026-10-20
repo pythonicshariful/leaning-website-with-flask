@@ -5,18 +5,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (mobileBtn && navLinks) {
     mobileBtn.addEventListener("click", () => {
-      const isVisible = navLinks.style.display === "flex";
-      navLinks.style.display = isVisible ? "none" : "flex";
-      navLinks.style.flexDirection = "column";
-      navLinks.style.position = "absolute";
-      navLinks.style.top = "72px";
-      navLinks.style.left = "0";
-      navLinks.style.right = "0";
-      navLinks.style.background = "#ffffff";
-      navLinks.style.padding = "20px";
-      navLinks.style.borderBottom = "1px solid #e2e8f0";
-      navLinks.style.boxShadow = "0 10px 25px rgba(0,0,0,0.1)";
-      navLinks.style.zIndex = "99";
+      const isOpen = navLinks.classList.toggle("nav-links--open");
+      mobileBtn.setAttribute("aria-expanded", String(isOpen));
+      mobileBtn.setAttribute("aria-label", isOpen ? "মেনু বন্ধ করুন" : "মেনু খুলুন");
+    });
+
+    navLinks.addEventListener("click", (event) => {
+      if (event.target.closest("a")) {
+        navLinks.classList.remove("nav-links--open");
+        mobileBtn.setAttribute("aria-expanded", "false");
+        mobileBtn.setAttribute("aria-label", "মেনু খুলুন");
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && navLinks.classList.contains("nav-links--open")) {
+        navLinks.classList.remove("nav-links--open");
+        mobileBtn.setAttribute("aria-expanded", "false");
+        mobileBtn.setAttribute("aria-label", "মেনু খুলুন");
+        mobileBtn.focus();
+      }
     });
   }
 
@@ -25,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (searchInput) {
     searchInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter" && searchInput.value.trim()) {
-        window.location.href = `/blog?q=${encodeURIComponent(searchInput.value.trim())}`;
+        window.location.href = `/courses?q=${encodeURIComponent(searchInput.value.trim())}`;
       }
     });
   }

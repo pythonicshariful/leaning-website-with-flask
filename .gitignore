@@ -16,6 +16,9 @@ instance/
 static/uploads/
 *.log
 
+# Local design-tool copy
+/ui-ux-pro-max-skill-main/
+
 # Test and coverage output
 .pytest_cache/
 .coverage

@@ -1,104 +1,165 @@
 {% extends "base.html" %}
-{% block title %}স্টুডেন্ট ড্যাশবোর্ড — পড়ারঘর{% endblock %}
+{% block title %}শিক্ষার্থী ড্যাশবোর্ড — পড়ারঘর{% endblock %}
 {% block content %}
-<div class="container" style="padding-top: 40px; padding-bottom: 80px;">
-  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 28px;">
-    <div>
-      <p style="margin: 0 0 8px; color: #0174C7; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 12px;">Student Dashboard</p>
-      <h1 style="margin: 0; font-size: 32px; font-weight: 800; color: #0f172a;">স্বাগতম, {{ student.name or 'শিক্ষার্থী' }}</h1>
-    </div>
-    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-      <a class="btn-cta" href="{{ url_for('student_profile') }}" style="padding: 12px 18px;">প্রোফাইল</a>
-      <a class="btn-cta btn-cta--secondary" href="{{ url_for('student_logout') }}" style="padding: 12px 18px; background: #e2e8f0; color: #0f172a;">লগআউট</a>
-    </div>
-  </div>
-
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 28px;">
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 22px; box-shadow: 0 8px 28px rgba(15, 23, 42, 0.04);">
-      <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em;">কোর্স সংখ্যা</div>
-      <div style="margin-top: 10px; font-size: 34px; font-weight: 800; color: #0f172a;">{{ total_courses }}</div>
-    </div>
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 22px; box-shadow: 0 8px 28px rgba(15, 23, 42, 0.04);">
-      <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em;">চেকআউট</div>
-      <div style="margin-top: 10px; font-size: 16px; font-weight: 700; color: #0f172a;">{{ student.phone or 'No phone' }}</div>
-    </div>
-    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 22px; box-shadow: 0 8px 28px rgba(15, 23, 42, 0.04);">
-      <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em;">মোট দেখার সময়</div>
-      <div style="margin-top: 10px; font-size: 22px; font-weight: 800; color: #0f172a;">
-        {% set total_seconds = 0 %}
-        {% for item in purchased %}
-          {% set total_seconds = total_seconds + (item.progress.watched_seconds or 0) %}
-        {% endfor %}
-        {{ (total_seconds // 3600) }} ঘণ্টা
+<div class="student-page">
+  <div class="container">
+    <header class="student-welcome">
+      <div class="student-welcome__copy">
+        <p class="eyebrow">শিক্ষার্থী ড্যাশবোর্ড</p>
+        <h1>স্বাগতম, {{ student.name or 'শিক্ষার্থী' }}</h1>
+        <p>আপনার শেখা, কেনাকাটা এবং অগ্রগতি—সব এক জায়গায়।</p>
       </div>
-    </div>
-  </div>
+      <div class="student-welcome__actions">
+        <a class="btn-secondary" href="{{ url_for('student_profile') }}">প্রোফাইল সম্পাদনা</a>
+        <a class="btn-cta" href="{{ url_for('student_logout') }}">লগআউট</a>
+      </div>
+    </header>
 
-  <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04); margin-bottom: 28px;">
-    <div style="padding: 22px 24px; border-bottom: 1px solid #e2e8f0; background: linear-gradient(135deg, #eff6ff, #f8fafc);">
-      <h2 style="margin: 0; font-size: 24px; font-weight: 800; color: #0f172a;">আমার কোর্স</h2>
-    </div>
+    {% set watched = namespace(seconds=0) %}
+    {% for item in purchased %}
+      {% set watched.seconds = watched.seconds + (item.progress.watched_seconds or 0) %}
+    {% endfor %}
+    <section class="student-stat-grid" aria-label="শিক্ষার্থীর সারসংক্ষেপ">
+      <article class="student-stat">
+        <span class="student-stat__label">সক্রিয় কোর্স ও প্রোগ্রাম</span>
+        <strong class="student-stat__value">{{ total_courses }}</strong>
+        <span class="student-stat__hint">আপনার শেখার তালিকায়</span>
+      </article>
+      <article class="student-stat">
+        <span class="student-stat__label">মোট দেখার সময়</span>
+        <strong class="student-stat__value">{{ (watched.seconds // 3600) }} ঘণ্টা {{ ((watched.seconds % 3600) // 60) }} মিনিট</strong>
+        <span class="student-stat__hint">সব কোর্স মিলিয়ে</span>
+      </article>
+      <article class="student-stat">
+        <span class="student-stat__label">পেমেন্ট রেকর্ড</span>
+        <strong class="student-stat__value">{{ payments|length }}</strong>
+        <span class="student-stat__hint">যাচাইসহ সব লেনদেন</span>
+      </article>
+    </section>
 
-    {% if purchased %}
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 24px;">
-        {% for item in purchased %}
-        <div style="border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px; background: #fff;">
-          <div style="display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 12px;">
-            <div>
-              <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;">{{ item.order.kind }}</div>
-              <h3 style="margin: 0; font-size: 20px; color: #0f172a;">{{ item.course.title }}</h3>
-            </div>
-            <span style="background: #dcfce7; color: #166534; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700;">{{ item.order.status }}</span>
-          </div>
-
-          <div style="margin: 12px 0 10px; color: #64748b; font-size: 13px;">ক্রয়: {{ item.order.created_at }} · দাম: ৳{{ item.order.amount }}</div>
-
-          <div style="margin-bottom: 10px;">
-            <div style="display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 6px;">
-              <span>প্রগ্রেস</span>
-              <strong>{{ item.progress.percent }}%</strong>
-            </div>
-            <div style="height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
-              <div style="height: 100%; width: {{ item.progress.percent }}%; background: linear-gradient(90deg, #0174C7, #38bdf8); border-radius: 999px;"></div>
-            </div>
-          </div>
-
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px;">
-            <div style="font-size: 13px; color: #64748b;">দেখা হয়েছে: {{ item.progress.watched_seconds // 60 }} মিনিট</div>
-            <a href="{{ url_for('course', cid=item.course.id) }}" class="btn-cta" style="padding: 9px 14px; font-size: 13px;">ক্লিক করে চালিয়ে যান</a>
-          </div>
+    {% if pending_orders %}
+    <section class="student-panel student-panel--pending" aria-labelledby="pending-heading">
+      <div class="student-panel__header">
+        <div>
+          <p class="eyebrow">যাচাই চলছে</p>
+          <h2 id="pending-heading">পেমেন্ট নিশ্চিতকরণ</h2>
         </div>
-        {% endfor %}
+        <span class="status-pill status-pill--pending">{{ pending_orders|length }}টি অপেক্ষমাণ</span>
       </div>
-    {% else %}
-      <div style="padding: 36px 24px; text-align: center; color: #64748b; font-size: 15px;">
-        এখনো কোনো কোর্স কিননি। <a href="{{ url_for('courses') }}" style="color: #0174C7; font-weight: 700;">কোর্স খুঁজে নিন</a>
-      </div>
-    {% endif %}
-  </div>
-
-  <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);">
-    <div style="padding: 22px 24px; border-bottom: 1px solid #e2e8f0; background: linear-gradient(135deg, #f8fafc, #ecfeff);">
-      <h2 style="margin: 0; font-size: 24px; font-weight: 800; color: #0f172a;">পেমেন্ট ইতিহাস</h2>
-    </div>
-    {% if payments %}
-      <div style="padding: 20px 24px; display: grid; gap: 12px;">
-        {% for payment in payments %}
-        <div style="display: flex; justify-content: space-between; gap: 12px; align-items: center; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; flex-wrap: wrap;">
+      <div class="pending-list">
+        {% for order in pending_orders %}
+        <article class="pending-row">
           <div>
-            <div style="font-weight: 700; color: #0f172a;">{{ payment.reference or payment.order_id }}</div>
-            <div style="font-size: 13px; color: #64748b;">{{ payment.created_at }} · {{ payment.payment_method or 'manual' }}</div>
+            <h3>{{ order.item_title }}</h3>
+            <p>রেফারেন্স: {{ order.transaction_reference or '—' }} · জমা: {{ order.created_at }}</p>
           </div>
-          <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-            <span style="background: #dcfce7; color: #166534; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700;">{{ payment.status }}</span>
-            <strong style="color: #0f172a;">৳{{ payment.amount }}</strong>
-          </div>
-        </div>
+          <div class="pending-row__amount">{{ order.amount|taka }}</div>
+        </article>
         {% endfor %}
       </div>
-    {% else %}
-      <div style="padding: 30px 24px; text-align: center; color: #64748b;">এখনো কোনো পেমেন্ট নেই।</div>
+      <p class="student-panel__note">অ্যাডমিন পেমেন্ট যাচাই করলে আপনার কেনা কোর্স এখানে চালু হবে। সহায়তা লাগলে <a href="{{ url_for('contact') }}">যোগাযোগ করুন</a>।</p>
+    </section>
     {% endif %}
+
+    <section class="student-panel" aria-labelledby="courses-heading">
+      <div class="student-panel__header">
+        <div>
+          <p class="eyebrow">আপনার শেখার জায়গা</p>
+          <h2 id="courses-heading">আমার কোর্স</h2>
+        </div>
+        <a class="section-header__link" href="{{ url_for('courses') }}">আরও কোর্স দেখুন <span aria-hidden="true">→</span></a>
+      </div>
+
+      {% if purchased %}
+      <div class="student-course-grid">
+        {% for item in purchased %}
+        {% if item.order.kind == 'course' %}
+          {% set item_url = url_for('course', cid=item.course.id) %}
+        {% elif item.order.kind == 'workshop' %}
+          {% set item_url = url_for('workshops') %}
+        {% elif item.order.kind == 'bundle' %}
+          {% set item_url = url_for('bundles') %}
+        {% else %}
+          {% set item_url = url_for('contact') %}
+        {% endif %}
+        <article class="student-course">
+          <a class="student-course__image" href="{{ item_url }}">
+            {% if item.course.image %}
+              <img src="{{ item.course.image }}" alt="" loading="lazy">
+            {% else %}
+              <span aria-hidden="true">{{ item.course.title[:1] }}</span>
+            {% endif %}
+          </a>
+          <div class="student-course__body">
+            <div class="student-course__meta">
+              <span>{{ item.order.kind }}</span>
+              <span class="status-pill status-pill--paid">চালু</span>
+            </div>
+            <h3><a href="{{ item_url }}">{{ item.course.title }}</a></h3>
+            <p class="student-course__purchase">কেনা হয়েছে {{ item.order.created_at }} · {{ item.order.amount|taka }}</p>
+            {% if item.order.kind == 'course' %}
+            <div class="student-progress">
+              <div class="student-progress__label">
+                <span>আপনার অগ্রগতি</span>
+                <strong>{{ item.progress.percent }}%</strong>
+              </div>
+              <div class="student-progress__track" role="progressbar" aria-label="{{ item.course.title }} কোর্সের অগ্রগতি" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ item.progress.percent }}">
+                <span style="width: {{ item.progress.percent }}%;"></span>
+              </div>
+            </div>
+            {% else %}
+            <p class="student-course__purchase student-course__delivery">পেমেন্ট যাচাই হয়েছে। {{ 'ওয়ার্কশপের সময়সূচি' if item.order.kind == 'workshop' else 'ডেলিভারি নির্দেশনার' }} জন্য সাপোর্টে যোগাযোগ করুন।</p>
+            {% endif %}
+            <div class="student-course__footer">
+              {% if item.order.kind == 'course' %}
+              <span>দেখেছেন {{ item.progress.watched_seconds // 60 }} মিনিট</span>
+              <a class="btn-cta" href="{{ item_url }}">শেখা চালিয়ে যান <span aria-hidden="true">→</span></a>
+              {% else %}
+              <a class="btn-cta" href="{{ item_url }}">সাপোর্টে যোগাযোগ করুন <span aria-hidden="true">→</span></a>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="student-empty">
+        <div class="student-empty__icon" aria-hidden="true">◎</div>
+        <h3>আপনার শেখার যাত্রা শুরু হোক</h3>
+        <p>কোর্স বেছে নিন। পেমেন্ট যাচাইয়ের পর এখানেই আপনার শেখার অগ্রগতি দেখতে পাবেন।</p>
+        <a class="btn-primary" href="{{ url_for('courses') }}">কোর্স ব্রাউজ করুন</a>
+      </div>
+      {% endif %}
+    </section>
+
+    <section class="student-panel" aria-labelledby="payments-heading">
+      <div class="student-panel__header">
+        <div>
+          <p class="eyebrow">অর্ডার ও লেনদেন</p>
+          <h2 id="payments-heading">পেমেন্ট ইতিহাস</h2>
+        </div>
+      </div>
+      {% if payments %}
+      <div class="payment-history">
+        {% for payment in payments %}
+        <article class="payment-row">
+          <div class="payment-row__info">
+            <strong>{{ payment.reference or payment.order_id }}</strong>
+            <span>{{ payment.created_at }} · {{ payment.payment_method or 'manual' }}</span>
+          </div>
+          <span class="status-pill {{ 'status-pill--paid' if payment.status == 'paid' else 'status-pill--pending' }}">
+            {{ 'পরিশোধিত' if payment.status == 'paid' else 'যাচাই অপেক্ষমাণ' }}
+          </span>
+          <strong class="payment-row__amount">{{ payment.amount|taka }}</strong>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="student-empty student-empty--compact">
+        <p>এখনো কোনো পেমেন্ট রেকর্ড নেই। কোর্স কিনলে আপনার লেনদেনের তথ্য এখানে থাকবে।</p>
+      </div>
+      {% endif %}
+    </section>
   </div>
 </div>
 {% endblock %}

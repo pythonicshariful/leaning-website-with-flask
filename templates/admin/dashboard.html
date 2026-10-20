@@ -50,13 +50,54 @@
   </div>
 </div>
 
+<div class="admin-card">
+  <div class="admin-card__header">
+    <div class="admin-card__title">পেমেন্ট যাচাই ({{ pending_orders|length }}টি অপেক্ষমাণ)</div>
+  </div>
+  {% if pending_orders %}
+  <div class="admin-card__body admin-card__body--table">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>অর্ডার</th>
+          <th>শিক্ষার্থী</th>
+          <th>পেমেন্ট রেফারেন্স</th>
+          <th>মাধ্যম</th>
+          <th>পরিমাণ</th>
+          <th>যাচাই</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in pending_orders %}
+        <tr>
+          <td><strong>{{ order.item_title }}</strong><br><small>{{ order.created_at }}</small></td>
+          <td>{{ order.student.name if order.student else 'শিক্ষার্থী' }}<br><small>{{ order.student.phone if order.student else order.student_id }}</small></td>
+          <td><code>{{ order.transaction_reference or '—' }}</code></td>
+          <td>{{ order.payment_method or '—' }}</td>
+          <td><strong>{{ order.amount|taka }}</strong></td>
+          <td>
+            <form method="post" action="{{ url_for('admin_payment_approve', order_id=order.id) }}" onsubmit="return confirm('বাহ্যিকভাবে পেমেন্ট যাচাই করেছেন? যাচাই করলে অ্যাক্সেস চালু হবে।');">
+              <input type="hidden" name="action_token" value="{{ admin_action_token }}">
+              <button class="btn-admin btn-admin-primary" type="submit">যাচাই ও চালু</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="admin-card__body">এখন কোনো পেমেন্ট যাচাইয়ের অপেক্ষায় নেই।</div>
+  {% endif %}
+</div>
+
 <!-- Courses Quick Overview Table -->
 <div class="admin-card">
   <div class="admin-card__header">
     <div class="admin-card__title">বিদ্যমান সকল কোর্সসমূহ</div>
     <a href="{{ url_for('admin_course_new') }}" class="btn-admin btn-admin-primary" style="font-size: 12px;">+ নতুন কোর্স</a>
   </div>
-  <div class="admin-card__body" style="padding: 0;">
+  <div class="admin-card__body admin-card__body--table">
     <table class="admin-table">
       <thead>
         <tr>

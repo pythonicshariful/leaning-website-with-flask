@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}চেকআউট — {{ item.title }}{% endblock %}
+{% block content %}
+<div class="checkout-page">
+  <div class="container">
+    <header class="checkout-heading">
+      <p class="eyebrow">নিরাপদ অর্ডার</p>
+      <h1>চেকআউট সম্পন্ন করুন</h1>
+      <p>আপনার পেমেন্ট রেফারেন্স জমা দিন। যাচাই শেষ হলে কেনা কনটেন্ট চালু হবে।</p>
+    </header>
+
+    <div class="checkout-layout">
+      <section class="checkout-card" aria-labelledby="payment-heading">
+        <div class="checkout-card__heading">
+          <span class="checkout-step">০১</span>
+          <div>
+            <h2 id="payment-heading">পেমেন্টের তথ্য</h2>
+            <p>যে মাধ্যমে টাকা পাঠিয়েছেন সেটি নির্বাচন করে ট্রানজ্যাকশন আইডি দিন।</p>
+          </div>
+        </div>
+
+        <div class="checkout-notice" role="note">
+          <strong>ম্যানুয়াল পেমেন্ট যাচাই</strong>
+          <p>এই সাইটে এখনো স্বয়ংক্রিয় পেমেন্ট গেটওয়ে যুক্ত নেই। টাকা পাঠানোর আগে <a href="{{ url_for('contact') }}">সাপোর্টে যোগাযোগ করে</a> অফিসিয়াল পেমেন্ট নির্দেশনা নিন। রেফারেন্স জমা হলে অ্যাডমিন যাচাই করবেন; যাচাইয়ের আগে অর্ডারটি পেইড হবে না।</p>
+        </div>
+
+        <form method="post" class="checkout-form">
+          <fieldset class="payment-methods">
+            <legend>পেমেন্ট পদ্ধতি নির্বাচন করুন</legend>
+            <div class="payment-method-grid">
+              {% for value, label in [('bkash', 'bKash'), ('nagad', 'Nagad'), ('rocket', 'Rocket'), ('bank', 'ব্যাংক ট্রান্সফার')] %}
+              <label class="payment-option">
+                <input type="radio" name="payment_method" value="{{ value }}" required>
+                <span>{{ label }}</span>
+              </label>
+              {% endfor %}
+            </div>
+          </fieldset>
+
+          <div class="form-group">
+            <label for="transaction-reference">ট্রানজ্যাকশন আইডি / পেমেন্ট রেফারেন্স</label>
+            <input class="form-input" id="transaction-reference" name="transaction_reference" maxlength="100" autocomplete="off" placeholder="আপনার পেমেন্ট রসিদে থাকা রেফারেন্স লিখুন" required>
+            <small class="form-hint">রেফারেন্সটি আপনার পেমেন্ট অ্যাপে/রসিদে যেভাবে আছে সেভাবে লিখুন।</small>
+          </div>
+
+          <button class="btn-cta checkout-submit" type="submit">রেফারেন্স জমা দিন <span aria-hidden="true">→</span></button>
+          <p class="checkout-terms">জমা দিলে অর্ডারের অবস্থা “যাচাই অপেক্ষমাণ” হবে। যাচাই না হওয়া পর্যন্ত কোর্স অ্যাক্সেস চালু হবে না।</p>
+        </form>
+      </section>
+
+      <aside class="checkout-summary" aria-labelledby="summary-heading">
+        <div class="checkout-summary__top">
+          <p class="eyebrow">অর্ডার সারাংশ</p>
+          <h2 id="summary-heading">{{ item.title }}</h2>
+          <span class="checkout-kind">{{ kind|title }}</span>
+        </div>
+        {% if item.image %}
+        <img class="checkout-summary__image" src="{{ item.image }}" alt="">
+        {% endif %}
+        <dl class="checkout-totals">
+          <div><dt>আইটেম</dt><dd>{{ item.title }}</dd></div>
+          <div class="checkout-total"><dt>সর্বমোট</dt><dd>{{ item.price|taka }}</dd></div>
+        </dl>
+        <div class="checkout-help">
+          <strong>কোনো সমস্যা হচ্ছে?</strong>
+          <p>আমাদের সাপোর্ট টিম অর্ডার এবং পেমেন্ট যাচাইয়ে সাহায্য করবে।</p>
+          <a href="{{ url_for('contact') }}">সাপোর্টে যোগাযোগ করুন</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+{% endblock %}

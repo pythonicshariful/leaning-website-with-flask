@@ -1,10 +1,13 @@
 import os
+import secrets
 import uuid
 from datetime import datetime
 from functools import wraps
+from urllib.parse import urlparse
 
 from flask import (
     Flask,
+    abort,
     flash,
     jsonify,
     redirect,
@@ -95,12 +98,22 @@ def index():
 @app.route("/courses")
 def courses():
     cat = request.args.get("cat", "")
+    query = request.args.get("q", "").strip()
     all_courses = db.get_courses()
     items = all_courses
     if cat:
         items = [c for c in all_courses if c.get("category") == cat]
+    if query:
+        normalized_query = query.casefold()
+        items = [
+            course for course in items
+            if any(
+                normalized_query in str(course.get(field, "")).casefold()
+                for field in ("title", "short", "category", "instructor")
+            )
+        ]
     cats = sorted({c.get("category") for c in all_courses if c.get("category")})
-    return render_template("courses.html", courses=items, cats=cats, cat=cat)
+    return render_template("courses.html", courses=items, cats=cats, cat=cat, q=query)
 
 
 @app.route("/course/<cid>")
@@ -206,8 +219,18 @@ def login():
         session["student_id"] = student["id"]
         session["student_name"] = student.get("name", name)
         flash(f"স্বাগতম, {student.get('name', 'শিক্ষার্থী')}! আপনার ড্যাশবোর্ডে প্রবেশ করেছেন।")
+        next_url = request.form.get("next", "")
+        parsed_next = urlparse(next_url)
+        if (
+            parsed_next.path.startswith("/")
+            and not parsed_next.path.startswith("//")
+            and "\\" not in next_url
+            and not parsed_next.netloc
+            and not parsed_next.scheme
+        ):
+            return redirect(next_url)
         return redirect(url_for("student_dashboard"))
-    return render_template("login.html")
+    return render_template("login.html", next_url=request.args.get("next", ""))
 
 
 @app.route("/student")
@@ -231,7 +254,14 @@ def student_dashboard():
         return redirect(url_for("login"))
 
     paid_orders = []
+    pending_orders = []
     for order in db.get_orders_for_student(student["id"]):
+        if order.get("status") == "pending":
+            pending_orders.append(order)
+            continue
+        if order.get("status") != "paid":
+            continue
+
         course = None
         if order.get("kind") == "course":
             course = db.get_course(order.get("item_id"))
@@ -242,6 +272,11 @@ def student_dashboard():
                     break
         elif order.get("kind") == "bundle":
             for item in db.get_bundles():
+                if item.get("id") == order.get("item_id"):
+                    course = item
+                    break
+        elif order.get("kind") == "ebook":
+            for item in db.get_ebooks():
                 if item.get("id") == order.get("item_id"):
                     course = item
                     break
@@ -260,6 +295,7 @@ def student_dashboard():
         "student_dashboard.html",
         student=student,
         purchased=paid_orders,
+        pending_orders=pending_orders,
         total_courses=len(paid_orders),
         payments=payments,
     )
@@ -328,68 +364,101 @@ def legal(page):
     )
 
 
-@app.route("/enroll/<kind>/<cid>", methods=["POST"])
-def enroll(kind, cid):
+def get_enrollable_item(kind, cid):
+    if kind == "course":
+        return db.get_course(cid)
+    items_by_kind = {
+        "workshop": db.get_workshops,
+        "bundle": db.get_bundles,
+        "ebook": db.get_ebooks,
+    }
+    get_items = items_by_kind.get(kind)
+    if not get_items:
+        return None
+    return next((item for item in get_items() if item.get("id") == cid), None)
+
+
+@app.route("/checkout/<kind>/<cid>", methods=["GET", "POST"])
+def checkout(kind, cid):
+    item = get_enrollable_item(kind, cid)
+    if not item:
+        abort(404)
+
     student = get_current_student()
     if not student:
-        flash("কোর্স কিনতে অথবা অ্যাক্সেস নিতে আগে লগইন করুন।")
-        return redirect(url_for("login"))
+        flash("চেকআউট সম্পন্ন করতে আগে লগইন করুন।")
+        return redirect(url_for("login", next=request.path))
 
-    item_title = cid
-    amount = 0
-    if kind == "course":
-        c = db.get_course(cid)
-        if c:
-            item_title = c.get("title")
-            amount = int(c.get("price") or 0)
-    elif kind == "workshop":
-        for w in db.get_workshops():
-            if w.get("id") == cid:
-                item_title = w.get("title")
-                amount = int(w.get("price") or 0)
-                break
-    elif kind == "bundle":
-        for b in db.get_bundles():
-            if b.get("id") == cid:
-                item_title = b.get("title")
-                amount = int(b.get("price") or 0)
-                break
-    elif kind == "ebook":
-        for e in db.get_ebooks():
-            if e.get("id") == cid:
-                item_title = e.get("title")
-                amount = int(e.get("price") or 0)
-                break
+    amount = int(item.get("price") or 0)
+    existing_order = next(
+        (
+            order for order in db.get_orders_for_student(student["id"])
+            if order.get("kind") == kind
+            and order.get("item_id") == cid
+            and order.get("status") in {"pending", "paid"}
+        ),
+        None,
+    )
+    if existing_order:
+        flash("এই আইটেমের জন্য আপনার একটি পেমেন্ট বা অ্যাক্সেস রেকর্ড আছে।")
+        return redirect(url_for("student_dashboard"))
 
-    order = db.add_order({
-        "student_id": student["id"],
-        "kind": kind,
-        "item_id": cid,
-        "item_title": item_title,
-        "amount": amount,
-        "status": "paid",
-        "payment_method": "manual",
-        "ip": request.remote_addr,
-    })
-    db.add_payment({
-        "student_id": student["id"],
-        "order_id": order["id"],
-        "amount": amount,
-        "status": "paid",
-        "payment_method": "manual",
-        "reference": f"ord-{order['id']}",
-    })
-    db.add_enrollment({
-        "kind": kind,
-        "item_id": cid,
-        "item_title": item_title,
-        "student_id": student["id"],
-        "status": "paid",
-        "amount": amount,
-        "ip": request.remote_addr,
-    })
-    flash(f"অভিনন্দন! '{item_title}' আপনার কোর্স তালিকায় যুক্ত হয়েছে।")
-    return redirect(url_for("student_dashboard"))
+    if request.method == "POST":
+        payment_method = request.form.get("payment_method", "").strip()
+        transaction_reference = request.form.get("transaction_reference", "").strip()
+        allowed_methods = {"bkash", "nagad", "rocket", "bank"}
+        if payment_method not in allowed_methods:
+            flash("অনুগ্রহ করে একটি পেমেন্ট পদ্ধতি নির্বাচন করুন।")
+            return render_template(
+                "checkout.html", item=item, kind=kind, student=student
+            ), 400
+        if not transaction_reference or len(transaction_reference) > 100:
+            flash("পেমেন্ট রেফারেন্সটি লিখুন (সর্বোচ্চ ১০০ অক্ষর)।")
+            return render_template(
+                "checkout.html", item=item, kind=kind, student=student
+            ), 400
+
+        order = db.create_order_with_payment({
+            "student_id": student["id"],
+            "kind": kind,
+            "item_id": cid,
+            "item_title": item.get("title", cid),
+            "amount": amount,
+            "status": "pending",
+            "payment_method": payment_method,
+            "transaction_reference": transaction_reference,
+            "ip": request.remote_addr,
+        }, {
+            "student_id": student["id"],
+            "amount": amount,
+            "status": "pending",
+            "payment_method": payment_method,
+            "reference": transaction_reference,
+        })
+        flash("পেমেন্ট রেফারেন্স জমা হয়েছে। যাচাই সম্পন্ন হলে অ্যাক্সেস চালু হবে।")
+        return redirect(url_for("student_dashboard"))
+
+    return render_template("checkout.html", item=item, kind=kind, student=student)
+
+
+@app.route("/enroll/<kind>/<cid>", methods=["POST"])
+def enroll(kind, cid):
+    return redirect(url_for("checkout", kind=kind, cid=cid))
+
+
+@app.route("/admin/payment/approve/<order_id>", methods=["POST"])
+@admin_required
+def admin_payment_approve(order_id):
+    token = request.form.get("action_token", "")
+    if not token or not secrets.compare_digest(
+        token, session.get("admin_action_token", "")
+    ):
+        abort(400)
+
+    if not db.approve_order(order_id):
+        abort(404)
+    flash("পেমেন্ট যাচাই করে অ্যাক্সেস চালু করা হয়েছে।")
+    return redirect(url_for("admin_dashboard"))
 
 
 # ============================================================================
@@ -439,6 +508,12 @@ def admin_dashboard():
     posts = db.get_posts()
     messages = db.get_messages()
     enrollments = db.get_enrollments()
+    pending_orders = [
+        {**order, "student": db.get_student(order.get("student_id"))}
+        for order in db.get_orders()
+        if order.get("status") == "pending"
+    ]
+    session.setdefault("admin_action_token", secrets.token_urlsafe(32))
     return render_template(
         "admin/dashboard.html",
         active_page="dashboard",
@@ -449,6 +524,8 @@ def admin_dashboard():
         posts=posts,
         messages=messages,
         enrollments=enrollments,
+        pending_orders=pending_orders,
+        admin_action_token=session["admin_action_token"],
     )
 
 

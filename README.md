@@ -22,3 +22,13 @@ python app.py
 The app generates a temporary session key if `SECRET_KEY` is unset, so sessions
 will be invalidated when the process restarts. Admin login is unavailable until
 both `ADMIN_USERNAME` and `ADMIN_PASSWORD` are set.
+
+## Checkout and payment verification
+
+Checkout currently records a student's selected manual payment method and
+transaction reference as a pending order. It does not collect money or verify
+transactions automatically. Before paying, students must contact support for
+the current official payment instructions. An admin must verify the transfer
+outside the app and approve the pending order from the admin dashboard before
+course access is enabled. Connect and verify a payment provider before treating
+this prototype flow as automated checkout.

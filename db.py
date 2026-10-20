@@ -756,38 +756,62 @@ def save_student(student_data):
     return student_data
 
 
-def add_order(order):
-    db = load_db()
-    orders = db.get("orders", [])
-    if "id" not in order:
-        order["id"] = str(uuid.uuid4())[:8]
-    if "created_at" not in order:
-        order["created_at"] = datetime.now().strftime("%d %b %Y, %I:%M %p")
-    orders.insert(0, order)
-    db["orders"] = orders
-    save_db(db)
-    return order
+def create_order_with_payment(order_data, payment_data):
+    data = load_db()
+    order = dict(order_data)
+    order.setdefault("id", str(uuid.uuid4())[:8])
+    order.setdefault("created_at", datetime.now().strftime("%d %b %Y, %I:%M %p"))
 
+    payment = dict(payment_data)
+    payment.setdefault("id", str(uuid.uuid4())[:8])
+    payment.setdefault("order_id", order["id"])
+    payment.setdefault("created_at", order["created_at"])
+    data.setdefault("orders", []).insert(0, order)
+    data.setdefault("payments", []).insert(0, payment)
+    save_db(data)
+    return order
 
 def get_orders_for_student(student_id):
     return [o for o in load_db().get("orders", []) if o.get("student_id") == student_id]
 
 
-def add_payment(payment):
-    db = load_db()
-    payments = db.get("payments", [])
-    if "id" not in payment:
-        payment["id"] = str(uuid.uuid4())[:8]
-    if "created_at" not in payment:
-        payment["created_at"] = datetime.now().strftime("%d %b %Y, %I:%M %p")
-    payments.insert(0, payment)
-    db["payments"] = payments
-    save_db(db)
-    return payment
+def get_orders():
+    return load_db().get("orders", [])
 
 
 def get_payments_for_student(student_id):
     return [p for p in load_db().get("payments", []) if p.get("student_id") == student_id]
+
+
+def approve_order(order_id):
+    data = load_db()
+    orders = data.get("orders", [])
+    order = next((item for item in orders if item.get("id") == order_id), None)
+    if not order or order.get("status") != "pending":
+        return None
+
+    order["status"] = "paid"
+    for payment in data.get("payments", []):
+        if payment.get("order_id") == order_id:
+            payment["status"] = "paid"
+
+    enrollments = data.get("enrollments", [])
+    if not any(item.get("order_id") == order_id for item in enrollments):
+        enrollments.insert(0, {
+            "id": str(uuid.uuid4())[:8],
+            "kind": order.get("kind"),
+            "item_id": order.get("item_id"),
+            "item_title": order.get("item_title"),
+            "student_id": order.get("student_id"),
+            "order_id": order_id,
+            "status": "paid",
+            "amount": order.get("amount", 0),
+            "ip": order.get("ip", ""),
+            "created_at": datetime.now().strftime("%d %b %Y, %I:%M %p"),
+        })
+    data["enrollments"] = enrollments
+    save_db(data)
+    return order
 
 
 def save_course_progress(student_id, course_id, payload):

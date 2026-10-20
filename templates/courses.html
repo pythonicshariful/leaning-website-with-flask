@@ -7,13 +7,14 @@
     <div class="section-header__tag">স্কিল ক্যাটালগ</div>
     <h1 style="font-size: 34px; font-weight: 800; margin-bottom: 8px;">সকল প্র্যাকটিক্যাল কোর্সসমূহ</h1>
     <p style="color: #64748b; font-size: 16px;">হিডেন কোনো চার্জ বা আপসেল নেই। নিচে যা উল্লেখ করা আছে, সরাসরি সেটাই পাবেন।</p>
+    {% if q %}<p class="course-search-result">“{{ q }}” অনুসন্ধানের ফলাফল: {{ courses|length }}টি কোর্স</p>{% endif %}
   </div>
 
   <!-- Filter Category Tabs -->
   <div class="filter-tabs">
-    <a class="filter-tab {{ 'is-on' if not cat else '' }}" href="{{ url_for('courses') }}">সব ক্যাটাগরি</a>
+    <a class="filter-tab {{ 'is-on' if not cat else '' }}" href="{{ url_for('courses', q=q) }}">সব ক্যাটাগরি</a>
     {% for k in cats %}
-      <a class="filter-tab {{ 'is-on' if cat == k else '' }}" href="{{ url_for('courses', cat=k) }}">{{ k }}</a>
+      <a class="filter-tab {{ 'is-on' if cat == k else '' }}" href="{{ url_for('courses', cat=k, q=q) }}">{{ k }}</a>
     {% endfor %}
   </div>
 

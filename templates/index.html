@@ -212,7 +212,7 @@
           </div>
           <div class="workshop-card__footer">
             <span class="workshop-price">{{ w.price|taka }}</span>
-            <form method="post" action="{{ url_for('enroll', kind='workshop', cid=w.id) }}" style="margin: 0;">
+            <form method="get" action="{{ url_for('checkout', kind='workshop', cid=w.id) }}" style="margin: 0;">
               <button class="btn-cta" type="submit" style="padding: 8px 18px; font-size: 13px;">সিট বুক করুন</button>
             </form>
           </div>
