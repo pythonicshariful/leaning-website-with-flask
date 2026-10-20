@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}স্টুডেন্ট প্রোফাইল — পড়ারঘর{% endblock %}
+{% block content %}
+<div class="container" style="padding-top: 40px; padding-bottom: 80px;">
+  <div style="max-width: 760px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05); overflow: hidden;">
+    <div style="padding: 24px 28px; background: linear-gradient(135deg, #f0f9ff, #eff6ff); border-bottom: 1px solid #e2e8f0;">
+      <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #0f172a;">প্রোফাইল</h1>
+    </div>
+
+    <form method="post" style="padding: 28px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px;">
+        <div class="form-group">
+          <label for="name">আপনার নাম</label>
+          <input class="form-input" id="name" name="name" value="{{ student.name or '' }}" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">মোবাইল নম্বর</label>
+          <input class="form-input" id="phone" name="phone" value="{{ student.phone or '' }}" required>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label for="email">ইমেইল</label>
+          <input class="form-input" id="email" name="email" value="{{ student.email or '' }}" placeholder="example@mail.com">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label for="photo">প্রোফাইল লিংক / URL</label>
+          <input class="form-input" id="photo" name="photo" value="{{ student.photo or '' }}" placeholder="https://...">
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+        <a href="{{ url_for('student_dashboard') }}" style="color: #0174C7; font-weight: 700; text-decoration: none;">← ড্যাশবোর্ডে ফিরুন</a>
+        <button class="btn-cta" type="submit" style="padding: 12px 20px;">সেভ করুন</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

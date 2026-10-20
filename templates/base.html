@@ -72,13 +72,23 @@
 
       <!-- CTA / Auth Button & Admin Shortcut -->
       <div class="nav-actions">
-        <a class="btn-cta" href="{{ settings.nav_cta_link or url_for('login') }}">
-          <span>{{ settings.nav_cta_text or 'লগইন / সাইন আপ' }}</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14"></path>
-            <path d="m12 5 7 7-7 7"></path>
-          </svg>
-        </a>
+        {% if session.get('student_id') %}
+          <a class="btn-cta" href="{{ url_for('student_dashboard') }}">
+            <span>আমার ড্যাশবোর্ড</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        {% else %}
+          <a class="btn-cta" href="{{ settings.nav_cta_link or url_for('login') }}">
+            <span>{{ settings.nav_cta_text or 'লগইন / সাইন আপ' }}</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </a>
+        {% endif %}
         <button class="mobile-menu-btn" type="button" aria-label="মেনু খুলুন" onclick="document.getElementById('nav-menu').classList.toggle('nav-links--open')">
           <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <line x1="3" y1="12" x2="21" y2="12"></line>

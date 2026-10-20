@@ -179,12 +179,131 @@ def contact():
     return render_template("contact.html")
 
 
+def get_current_student():
+    student_id = session.get("student_id")
+    if not student_id:
+        return None
+    return db.get_student(student_id)
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        flash("ডেমো সাইট — আসল অ্যাকাউন্ট নেই। নামটা মনে রাখলাম।")
-        return redirect(url_for("login"))
+        phone = request.form.get("phone", "").strip()
+        name = request.form.get("name", "").strip() or "শিক্ষার্থী"
+        if not phone:
+            flash("অনুগ্রহ করে মোবাইল নম্বর লিখুন।")
+            return redirect(url_for("login"))
+
+        student = db.find_student_by_phone(phone)
+        if not student:
+            student = db.save_student({
+                "name": name,
+                "phone": phone,
+                "email": "",
+                "photo": "",
+            })
+        session["student_id"] = student["id"]
+        session["student_name"] = student.get("name", name)
+        flash(f"স্বাগতম, {student.get('name', 'শিক্ষার্থী')}! আপনার ড্যাশবোর্ডে প্রবেশ করেছেন।")
+        return redirect(url_for("student_dashboard"))
     return render_template("login.html")
+
+
+@app.route("/student")
+def student_index():
+    return redirect(url_for("student_dashboard"))
+
+
+@app.route("/student/logout")
+def student_logout():
+    session.pop("student_id", None)
+    session.pop("student_name", None)
+    flash("সফলভাবে লগআউট করেছেন।")
+    return redirect(url_for("login"))
+
+
+@app.route("/student/dashboard")
+def student_dashboard():
+    student = get_current_student()
+    if not student:
+        flash("আপনার ড্যাশবোর্ড দেখতে লগইন করুন।")
+        return redirect(url_for("login"))
+
+    paid_orders = []
+    for order in db.get_orders_for_student(student["id"]):
+        course = None
+        if order.get("kind") == "course":
+            course = db.get_course(order.get("item_id"))
+        elif order.get("kind") == "workshop":
+            for item in db.get_workshops():
+                if item.get("id") == order.get("item_id"):
+                    course = item
+                    break
+        elif order.get("kind") == "bundle":
+            for item in db.get_bundles():
+                if item.get("id") == order.get("item_id"):
+                    course = item
+                    break
+        if not course:
+            continue
+
+        progress = db.get_student_course_progress(student["id"], order.get("item_id"))
+        paid_orders.append({
+            "order": order,
+            "course": course,
+            "progress": progress,
+        })
+
+    payments = db.get_payments_for_student(student["id"])
+    return render_template(
+        "student_dashboard.html",
+        student=student,
+        purchased=paid_orders,
+        total_courses=len(paid_orders),
+        payments=payments,
+    )
+
+
+@app.route("/student/profile", methods=["GET", "POST"])
+def student_profile():
+    student = get_current_student()
+    if not student:
+        flash("আপনার প্রোফাইল দেখতে লগইন করুন।")
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        student["name"] = request.form.get("name", student.get("name", "")).strip() or student.get("name", "শিক্ষার্থী")
+        student["email"] = request.form.get("email", "").strip()
+        student["phone"] = request.form.get("phone", student.get("phone", "")).strip()
+        student["photo"] = request.form.get("photo", student.get("photo", "")).strip()
+        db.save_student(student)
+        flash("প্রোফাইল আপডেট করা হয়েছে।")
+        return redirect(url_for("student_profile"))
+
+    return render_template("student_profile.html", student=student)
+
+
+@app.route("/student/progress/<cid>", methods=["POST"])
+def student_progress(cid):
+    student = get_current_student()
+    if not student:
+        return jsonify({"ok": False, "message": "login required"}), 401
+
+    payload = request.get_json(silent=True) or request.form
+    percent = int(payload.get("percent", 0) or 0)
+    watched_seconds = int(payload.get("watched_seconds", 0) or 0)
+    if not isinstance(percent, int):
+        try:
+            percent = int(float(percent))
+        except Exception:
+            percent = 0
+
+    record = db.save_course_progress(student["id"], cid, {
+        "percent": percent,
+        "watched_seconds": watched_seconds,
+    })
+    return jsonify({"ok": True, "percent": record["percent"], "status": record["status"], "watched_seconds": record["watched_seconds"]})
 
 
 @app.route("/verify", methods=["GET", "POST"])
@@ -211,32 +330,66 @@ def legal(page):
 
 @app.route("/enroll/<kind>/<cid>", methods=["POST"])
 def enroll(kind, cid):
+    student = get_current_student()
+    if not student:
+        flash("কোর্স কিনতে অথবা অ্যাক্সেস নিতে আগে লগইন করুন।")
+        return redirect(url_for("login"))
+
     item_title = cid
+    amount = 0
     if kind == "course":
         c = db.get_course(cid)
         if c:
             item_title = c.get("title")
+            amount = int(c.get("price") or 0)
     elif kind == "workshop":
         for w in db.get_workshops():
             if w.get("id") == cid:
                 item_title = w.get("title")
+                amount = int(w.get("price") or 0)
+                break
     elif kind == "bundle":
         for b in db.get_bundles():
             if b.get("id") == cid:
                 item_title = b.get("title")
+                amount = int(b.get("price") or 0)
+                break
     elif kind == "ebook":
         for e in db.get_ebooks():
             if e.get("id") == cid:
                 item_title = e.get("title")
+                amount = int(e.get("price") or 0)
+                break
 
+    order = db.add_order({
+        "student_id": student["id"],
+        "kind": kind,
+        "item_id": cid,
+        "item_title": item_title,
+        "amount": amount,
+        "status": "paid",
+        "payment_method": "manual",
+        "ip": request.remote_addr,
+    })
+    db.add_payment({
+        "student_id": student["id"],
+        "order_id": order["id"],
+        "amount": amount,
+        "status": "paid",
+        "payment_method": "manual",
+        "reference": f"ord-{order['id']}",
+    })
     db.add_enrollment({
         "kind": kind,
         "item_id": cid,
         "item_title": item_title,
+        "student_id": student["id"],
+        "status": "paid",
+        "amount": amount,
         "ip": request.remote_addr,
     })
-    flash(f"অভিনন্দন! '{item_title}' এর জন্য ভর্তি রিকোয়েস্ট গ্রহণ করা হয়েছে।")
-    return redirect(request.referrer or url_for("index"))
+    flash(f"অভিনন্দন! '{item_title}' আপনার কোর্স তালিকায় যুক্ত হয়েছে।")
+    return redirect(url_for("student_dashboard"))
 
 
 # ============================================================================

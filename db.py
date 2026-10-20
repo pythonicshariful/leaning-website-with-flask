@@ -397,7 +397,11 @@ def init_db():
             "legal": DEFAULT_LEGAL,
             "offers": DEFAULT_OFFERS,
             "messages": [],
-            "enrollments": []
+            "enrollments": [],
+            "students": [],
+            "orders": [],
+            "payments": [],
+            "progress": []
         }
         save_db(data)
         return data
@@ -434,7 +438,11 @@ def load_db():
                 ("legal", DEFAULT_LEGAL),
                 ("offers", DEFAULT_OFFERS),
                 ("messages", []),
-                ("enrollments", [])
+                ("enrollments", []),
+                ("students", []),
+                ("orders", []),
+                ("payments", []),
+                ("progress", [])
             ]:
                 if col not in data:
                     data[col] = val
@@ -706,6 +714,124 @@ def add_enrollment(enrollment):
 
 def get_enrollments():
     return load_db().get("enrollments", [])
+
+
+def get_students():
+    return load_db().get("students", [])
+
+
+def get_student(student_id):
+    for s in get_students():
+        if s.get("id") == student_id:
+            return s
+    return None
+
+
+def find_student_by_phone(phone):
+    p = (phone or "").strip()
+    for s in get_students():
+        if s.get("phone", "").strip() == p:
+            return s
+    return None
+
+
+def save_student(student_data):
+    db = load_db()
+    students = db.get("students", [])
+    sid = student_data.get("id")
+    if not sid:
+        sid = str(uuid.uuid4())[:8]
+        student_data["id"] = sid
+    if "created_at" not in student_data:
+        student_data["created_at"] = datetime.now().strftime("%d %b %Y, %I:%M %p")
+    for idx, s in enumerate(students):
+        if s.get("id") == sid:
+            students[idx] = {**s, **student_data}
+            db["students"] = students
+            save_db(db)
+            return students[idx]
+    students.insert(0, student_data)
+    db["students"] = students
+    save_db(db)
+    return student_data
+
+
+def add_order(order):
+    db = load_db()
+    orders = db.get("orders", [])
+    if "id" not in order:
+        order["id"] = str(uuid.uuid4())[:8]
+    if "created_at" not in order:
+        order["created_at"] = datetime.now().strftime("%d %b %Y, %I:%M %p")
+    orders.insert(0, order)
+    db["orders"] = orders
+    save_db(db)
+    return order
+
+
+def get_orders_for_student(student_id):
+    return [o for o in load_db().get("orders", []) if o.get("student_id") == student_id]
+
+
+def add_payment(payment):
+    db = load_db()
+    payments = db.get("payments", [])
+    if "id" not in payment:
+        payment["id"] = str(uuid.uuid4())[:8]
+    if "created_at" not in payment:
+        payment["created_at"] = datetime.now().strftime("%d %b %Y, %I:%M %p")
+    payments.insert(0, payment)
+    db["payments"] = payments
+    save_db(db)
+    return payment
+
+
+def get_payments_for_student(student_id):
+    return [p for p in load_db().get("payments", []) if p.get("student_id") == student_id]
+
+
+def save_course_progress(student_id, course_id, payload):
+    db = load_db()
+    progress_items = db.get("progress", [])
+    percent = int(payload.get("percent", 0) or 0)
+    watched_seconds = int(payload.get("watched_seconds", 0) or 0)
+    record = None
+    for item in progress_items:
+        if item.get("student_id") == student_id and item.get("course_id") == course_id:
+            record = item
+            break
+    if not record:
+        record = {
+            "id": str(uuid.uuid4())[:8],
+            "student_id": student_id,
+            "course_id": course_id,
+            "created_at": datetime.now().strftime("%d %b %Y, %I:%M %p"),
+        }
+        progress_items.insert(0, record)
+    record["percent"] = max(0, min(100, percent))
+    record["watched_seconds"] = max(0, watched_seconds)
+    record["updated_at"] = datetime.now().strftime("%d %b %Y, %I:%M %p")
+    if record["percent"] >= 100:
+        record["status"] = "completed"
+    elif record["percent"] > 0:
+        record["status"] = "in_progress"
+    else:
+        record["status"] = "not_started"
+    db["progress"] = progress_items
+    save_db(db)
+    return record
+
+
+def get_student_course_progress(student_id, course_id):
+    for item in load_db().get("progress", []):
+        if item.get("student_id") == student_id and item.get("course_id") == course_id:
+            return item
+    return {"percent": 0, "watched_seconds": 0, "status": "not_started"}
+
+
+def get_student_progress(student_id):
+    return [p for p in load_db().get("progress", []) if p.get("student_id") == student_id]
+
 
 def delete_enrollment(eid):
     db = load_db()
